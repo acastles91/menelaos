@@ -1,0 +1,292 @@
+EESchema Schematic File Version 4
+EELAYER 30 0
+EELAYER END
+$Descr A4 11693 8268
+encoding utf-8
+Sheet 4 5
+Title ""
+Date ""
+Rev ""
+Comp ""
+Comment1 ""
+Comment2 ""
+Comment3 ""
+Comment4 ""
+$EndDescr
+$Comp
+L upuaut_2Nils-rescue:R-Device R14
+U 1 1 6080133E
+P 3600 2500
+F 0 "R14" V 3393 2500 50  0000 C CNN
+F 1 "10K" V 3484 2500 50  0000 C CNN
+F 2 "Resistor_THT:R_Axial_DIN0204_L3.6mm_D1.6mm_P7.62mm_Horizontal" V 3530 2500 50  0001 C CNN
+F 3 "~" H 3600 2500 50  0001 C CNN
+	1    3600 2500
+	1    0    0    -1  
+$EndComp
+Text GLabel 3600 2650 3    50   Input ~ 0
+_zero
+Wire Wire Line
+	4750 2650 5600 2650
+$Comp
+L power:+5VL #PWR0142
+U 1 1 61CCDC8D
+P 3000 1850
+F 0 "#PWR0142" H 3000 1700 50  0001 C CNN
+F 1 "+5VL" H 3015 2023 50  0000 C CNN
+F 2 "" H 3000 1850 50  0001 C CNN
+F 3 "" H 3000 1850 50  0001 C CNN
+	1    3000 1850
+	1    0    0    -1  
+$EndComp
+$Comp
+L upuaut_2Nils-rescue:R-Device R11
+U 1 1 61CCDF3D
+P 3000 2100
+F 0 "R11" V 2793 2100 50  0000 C CNN
+F 1 "5K" V 2884 2100 50  0000 C CNN
+F 2 "Resistor_THT:R_Axial_DIN0204_L3.6mm_D1.6mm_P7.62mm_Horizontal" V 2930 2100 50  0001 C CNN
+F 3 "~" H 3000 2100 50  0001 C CNN
+	1    3000 2100
+	1    0    0    -1  
+$EndComp
+$Comp
+L upuaut_2Nils-rescue:R-Device R12
+U 1 1 61CCE112
+P 3000 2500
+F 0 "R12" V 2793 2500 50  0000 C CNN
+F 1 "10K" V 2884 2500 50  0000 C CNN
+F 2 "Resistor_THT:R_Axial_DIN0204_L3.6mm_D1.6mm_P7.62mm_Horizontal" V 2930 2500 50  0001 C CNN
+F 3 "~" H 3000 2500 50  0001 C CNN
+	1    3000 2500
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	3000 1950 3000 1850
+Wire Wire Line
+	3000 2350 3000 2250
+Wire Wire Line
+	3000 2850 3000 2650
+Wire Wire Line
+	3600 2350 3000 2350
+Connection ~ 3000 2350
+Wire Wire Line
+	3600 2650 4250 2650
+$Comp
+L upuaut_2Nils-rescue:R-Device R18
+U 1 1 61CD1661
+P 3600 4050
+F 0 "R18" V 3393 4050 50  0000 C CNN
+F 1 "10K" V 3484 4050 50  0000 C CNN
+F 2 "Resistor_THT:R_Axial_DIN0204_L3.6mm_D1.6mm_P7.62mm_Horizontal" V 3530 4050 50  0001 C CNN
+F 3 "~" H 3600 4050 50  0001 C CNN
+	1    3600 4050
+	1    0    0    -1  
+$EndComp
+Text GLabel 3600 4200 3    50   Input ~ 0
+_mode
+Wire Wire Line
+	4750 4200 5600 4200
+$Comp
+L power:+5VL #PWR0145
+U 1 1 61CD1675
+P 3000 3400
+F 0 "#PWR0145" H 3000 3250 50  0001 C CNN
+F 1 "+5VL" H 3015 3573 50  0000 C CNN
+F 2 "" H 3000 3400 50  0001 C CNN
+F 3 "" H 3000 3400 50  0001 C CNN
+	1    3000 3400
+	1    0    0    -1  
+$EndComp
+$Comp
+L upuaut_2Nils-rescue:R-Device R13
+U 1 1 61CD167B
+P 3000 3650
+F 0 "R13" V 2793 3650 50  0000 C CNN
+F 1 "5K" V 2884 3650 50  0000 C CNN
+F 2 "Resistor_THT:R_Axial_DIN0204_L3.6mm_D1.6mm_P7.62mm_Horizontal" V 2930 3650 50  0001 C CNN
+F 3 "~" H 3000 3650 50  0001 C CNN
+	1    3000 3650
+	1    0    0    -1  
+$EndComp
+$Comp
+L upuaut_2Nils-rescue:R-Device R15
+U 1 1 61CD1681
+P 3000 4050
+F 0 "R15" V 2793 4050 50  0000 C CNN
+F 1 "10K" V 2884 4050 50  0000 C CNN
+F 2 "Resistor_THT:R_Axial_DIN0204_L3.6mm_D1.6mm_P7.62mm_Horizontal" V 2930 4050 50  0001 C CNN
+F 3 "~" H 3000 4050 50  0001 C CNN
+	1    3000 4050
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	3000 3500 3000 3400
+Wire Wire Line
+	3000 3900 3000 3800
+Wire Wire Line
+	3000 4400 3000 4200
+Wire Wire Line
+	3600 3900 3000 3900
+Connection ~ 3000 3900
+Wire Wire Line
+	3600 4200 4250 4200
+$Comp
+L upuaut_2Nils-rescue:R-Device R19
+U 1 1 61EA94A2
+P 3600 5750
+F 0 "R19" V 3393 5750 50  0000 C CNN
+F 1 "10K" V 3484 5750 50  0000 C CNN
+F 2 "Resistor_THT:R_Axial_DIN0204_L3.6mm_D1.6mm_P7.62mm_Horizontal" V 3530 5750 50  0001 C CNN
+F 3 "~" H 3600 5750 50  0001 C CNN
+	1    3600 5750
+	1    0    0    -1  
+$EndComp
+Text GLabel 3600 5900 3    50   Input ~ 0
+_config
+Wire Wire Line
+	4750 5900 5600 5900
+$Comp
+L power:+5VL #PWR05
+U 1 1 61EA94B6
+P 3000 5100
+F 0 "#PWR05" H 3000 4950 50  0001 C CNN
+F 1 "+5VL" H 3015 5273 50  0000 C CNN
+F 2 "" H 3000 5100 50  0001 C CNN
+F 3 "" H 3000 5100 50  0001 C CNN
+	1    3000 5100
+	1    0    0    -1  
+$EndComp
+$Comp
+L upuaut_2Nils-rescue:R-Device R16
+U 1 1 61EA94BC
+P 3000 5350
+F 0 "R16" V 2793 5350 50  0000 C CNN
+F 1 "5K" V 2884 5350 50  0000 C CNN
+F 2 "Resistor_THT:R_Axial_DIN0204_L3.6mm_D1.6mm_P7.62mm_Horizontal" V 2930 5350 50  0001 C CNN
+F 3 "~" H 3000 5350 50  0001 C CNN
+	1    3000 5350
+	1    0    0    -1  
+$EndComp
+$Comp
+L upuaut_2Nils-rescue:R-Device R17
+U 1 1 61EA94C2
+P 3000 5750
+F 0 "R17" V 2793 5750 50  0000 C CNN
+F 1 "10K" V 2884 5750 50  0000 C CNN
+F 2 "Resistor_THT:R_Axial_DIN0204_L3.6mm_D1.6mm_P7.62mm_Horizontal" V 2930 5750 50  0001 C CNN
+F 3 "~" H 3000 5750 50  0001 C CNN
+	1    3000 5750
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	3000 5200 3000 5100
+Wire Wire Line
+	3000 5600 3000 5500
+Wire Wire Line
+	3000 6100 3000 5900
+Wire Wire Line
+	3600 5600 3000 5600
+Connection ~ 3000 5600
+Wire Wire Line
+	3600 5900 4250 5900
+$Comp
+L knownParts:Generic-Switch S1
+U 1 1 61EAAF15
+P 4500 2650
+F 0 "S1" H 4500 3005 50  0000 C CNN
+F 1 "Generic-Switch" H 4500 2914 50  0000 C CNN
+F 2 "TerminalBlock:TerminalBlock_Altech_AK300-2_P5.00mm" H 4500 2823 50  0000 C CNN
+F 3 "" H 4500 2450 50  0001 C CNN
+	1    4500 2650
+	1    0    0    -1  
+$EndComp
+$Comp
+L knownParts:Generic-Switch S2
+U 1 1 61EAB380
+P 4500 4200
+F 0 "S2" H 4500 4555 50  0000 C CNN
+F 1 "Generic-Switch" H 4500 4464 50  0000 C CNN
+F 2 "TerminalBlock:TerminalBlock_Altech_AK300-2_P5.00mm" H 4500 4373 50  0000 C CNN
+F 3 "" H 4500 4000 50  0001 C CNN
+	1    4500 4200
+	1    0    0    -1  
+$EndComp
+$Comp
+L knownParts:Generic-Switch S3
+U 1 1 61EAB631
+P 4500 5900
+F 0 "S3" H 4500 6255 50  0000 C CNN
+F 1 "Generic-Switch" H 4500 6164 50  0000 C CNN
+F 2 "TerminalBlock:TerminalBlock_Altech_AK300-2_P5.00mm" H 4500 6073 50  0000 C CNN
+F 3 "" H 4500 5700 50  0001 C CNN
+	1    4500 5900
+	1    0    0    -1  
+$EndComp
+$Comp
+L power:GND #PWR09
+U 1 1 62207F52
+P 5600 2650
+F 0 "#PWR09" H 5600 2400 50  0001 C CNN
+F 1 "GND" H 5605 2477 50  0000 C CNN
+F 2 "" H 5600 2650 50  0001 C CNN
+F 3 "" H 5600 2650 50  0001 C CNN
+	1    5600 2650
+	1    0    0    -1  
+$EndComp
+$Comp
+L power:GND #PWR06
+U 1 1 6220821C
+P 3000 2850
+F 0 "#PWR06" H 3000 2600 50  0001 C CNN
+F 1 "GND" H 3005 2677 50  0000 C CNN
+F 2 "" H 3000 2850 50  0001 C CNN
+F 3 "" H 3000 2850 50  0001 C CNN
+	1    3000 2850
+	1    0    0    -1  
+$EndComp
+$Comp
+L power:GND #PWR07
+U 1 1 622084E0
+P 3000 4400
+F 0 "#PWR07" H 3000 4150 50  0001 C CNN
+F 1 "GND" H 3005 4227 50  0000 C CNN
+F 2 "" H 3000 4400 50  0001 C CNN
+F 3 "" H 3000 4400 50  0001 C CNN
+	1    3000 4400
+	1    0    0    -1  
+$EndComp
+$Comp
+L power:GND #PWR010
+U 1 1 622087D6
+P 5600 4200
+F 0 "#PWR010" H 5600 3950 50  0001 C CNN
+F 1 "GND" H 5605 4027 50  0000 C CNN
+F 2 "" H 5600 4200 50  0001 C CNN
+F 3 "" H 5600 4200 50  0001 C CNN
+	1    5600 4200
+	1    0    0    -1  
+$EndComp
+$Comp
+L power:GND #PWR011
+U 1 1 62208A54
+P 5600 5900
+F 0 "#PWR011" H 5600 5650 50  0001 C CNN
+F 1 "GND" H 5605 5727 50  0000 C CNN
+F 2 "" H 5600 5900 50  0001 C CNN
+F 3 "" H 5600 5900 50  0001 C CNN
+	1    5600 5900
+	1    0    0    -1  
+$EndComp
+$Comp
+L power:GND #PWR08
+U 1 1 62208D48
+P 3000 6100
+F 0 "#PWR08" H 3000 5850 50  0001 C CNN
+F 1 "GND" H 3005 5927 50  0000 C CNN
+F 2 "" H 3000 6100 50  0001 C CNN
+F 3 "" H 3000 6100 50  0001 C CNN
+	1    3000 6100
+	1    0    0    -1  
+$EndComp
+$EndSCHEMATC
