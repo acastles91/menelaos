@@ -1,9 +1,6 @@
 #pragma once
 
-
-
 #include "bcd.h"
-
 #define EEPROM_SIZE 1
 
 
@@ -13,14 +10,13 @@ Value::Value(){
 
     Serial.begin(115200);
 
-    //EEPROM.begin(EEPROM_SIZE);
-
     counter = Counter::ones;  
-    numberValue = 0;
-    Serial.println("Value constructor called");
-    Serial.println("Number Value Constructor= " + String(numberValue));
-    valueVector = dec_to_bin(numberValue);
+    remainingValue = 0;
+    remainingValueVector = dec_to_bin(remainingValue / 10);
     addedNumber = 0;
+    takenValue = 0;
+    takenValueVector = dec_to_bin(takenValue / 10);
+    lastSavedRoll = remainingValue;
     }
 
 Value::Value(int32_t& lastValueArg){
@@ -30,10 +26,10 @@ Value::Value(int32_t& lastValueArg){
     //EEPROM.begin(EEPROM_SIZE);
 
     counter = Counter::ones;  
-    numberValue = lastValueArg;
-    Serial.println("Value constructor called");
-    Serial.println("Number Value Constructor= " + String(numberValue));
-    valueVector = dec_to_bin(numberValue);
+    remainingValue = lastValueArg;
+    //Serial.println("Value constructor called");
+    //Serial.println("Number Value Constructor= " + String(remainingValue));
+    remainingValueVector = dec_to_bin(remainingValue);
     addedNumber = 0;
     }
 
@@ -75,7 +71,7 @@ void Value::readValue(){
 void Value::saveValue(){
 
     // printf("Updating saved value in NVS ... ");
-    // err = nvs_set_i32(my_handle, "saved_value", numberValue);
+    // err = nvs_set_i32(my_handle, "saved_value", remainingValue);
     // printf((err != ESP_OK) ? "Failed!\n" : "Done\n");
 
     // // Commit written value.
@@ -94,7 +90,7 @@ void Value::saveValue(){
 }
 
 std::vector<std::bitset<4>> Value::dec_to_bin(int n){
-    int safeNumberValue = n;
+    int saferemainingValue = n;
 
     std::vector<std::bitset<4>> repr;
     if (n == 0){
@@ -137,54 +133,59 @@ std::vector<std::bitset<4>> Value::dec_to_bin(int n){
         std::bitset<4> bitset0;
         repr.push_back(bitset0); 
     }
+    else if (n < 10000){
+        while(n > 0){
+            repr.push_back(std::bitset<4>(n % 10));
+            n /= 10;
+        }
+    }
 
-    numberValue = safeNumberValue;
         return repr;
 }
 
 std::vector<std::bitset<4>> Value::dec_to_bin3(){
     std::vector<std::bitset<4>> repr;
-    if (numberValue == 0){
+    int32_t provisionalValue = remainingValue;
+    if (provisionalValue == 0){
         std::bitset<4> bitset0, bitset1, bitset2, bitset3;
         repr.push_back(bitset0);
         repr.push_back(bitset1);
         repr.push_back(bitset2);
         repr.push_back(bitset3);
     }
-    else if (numberValue < 10){
-        while(numberValue > 0){
-
-            // std::bitset<4> testBitset = std::bitset<4>(n % 10);
-            // repr.push_back(testBitset);
-            repr.push_back(std::bitset<4>(numberValue % 10));
-            numberValue /= 10;
+    else if (provisionalValue < 10){
+        while(provisionalValue > 0){
+            repr.push_back(std::bitset<4>(provisionalValue % 10));
+            provisionalValue /= 10;
         }
         std::bitset<4> bitset0, bitset1, bitset2;
         repr.push_back(bitset0);
         repr.push_back(bitset1);
         repr.push_back(bitset2);
     }
-    else if (numberValue < 100){
-        while(numberValue > 0){
-            // std::bitset<4> testBitset = std::bitset<4>(n % 10);
-            // testBitset.flip();
-            // repr.push_back(testBitset);
-            repr.push_back(std::bitset<4>(numberValue % 10));
-            numberValue /= 10;
+    else if (provisionalValue < 100){
+        while(provisionalValue > 0){
+            repr.push_back(std::bitset<4>(provisionalValue % 10));
+            provisionalValue /= 10;
         }
         std::bitset<4> bitset0, bitset1;
         repr.push_back(bitset0);
         repr.push_back(bitset1);  
     }
-    else if (numberValue < 1000){
-        while(numberValue > 0){
-            repr.push_back(std::bitset<4>(numberValue % 10));
-        numberValue /= 10;
+    else if (provisionalValue < 1000){
+        while(provisionalValue > 0){
+            repr.push_back(std::bitset<4>(provisionalValue % 10));
+            provisionalValue /= 10;
         }
         std::bitset<4> bitset0;
         repr.push_back(bitset0); 
     }
-    //std::reverse(repr.begin(), repr.end());
+    else if (provisionalValue < 10000){
+        while(provisionalValue > 0){
+            repr.push_back(std::bitset<4>(provisionalValue % 10));
+            provisionalValue /= 10;
+        }
+    }
     return repr;
 }
 
@@ -230,34 +231,72 @@ volatile std::vector<std::bitset<4>> Value::dec_to_bin2(int& n){
         std::bitset<4> bitset0;
         repr.push_back(bitset0); 
     }
-    //std::reverse(repr.begin(), repr.end());
     return repr;
 }
 
 void Value::setNumber(int32_t& numberArg){
 
-    numberValue = numberArg; 
-    valueVector = dec_to_bin3();
+    remainingValue = numberArg; 
+    remainingValueVector = dec_to_bin(remainingValue / 10);
+    lastSavedRoll = remainingValue;
+    //Serial.println("numberArg: " + String(numberArg));
+    //Serial.println("remainingValue: " + String(remainingValue));
+
+
 
 }
 
 void Value::addNumber(int32_t sum){
 
-    addedNumber = sum;
-    numberValue = numberValue + sum;
-    valueVector = dec_to_bin(numberValue);
-    //valueVector = dec_to_bin3();
+    //addedNumber = sum;
+    remainingValue += sum;
+    remainingValueVector = dec_to_bin(remainingValue / 10);
+    if (remainingValue > lastSavedRoll){
+        remainingValue = lastSavedRoll;
+    }
+    printf("remaining value: %d \n taken value: %d \n", remainingValue, takenValue);
+
+    //remainingValueVector = dec_to_bin3();
 
 
 }
 
-void Value::updateValueVector(){
+void Value::updateRemainingValueVector(){
 
-    valueVector = dec_to_bin3();
+    remainingValueVector = dec_to_bin3();
 }
 
-int Value::getNumberValue(){
+int32_t Value::getRemainingValue(){
 
-    return numberValue;
+    return remainingValue;
 
+}
+
+void Value::updateValues(int32_t n){
+
+    takenValue += n ;
+    //takenValueVector = dec_to_bin(takenValue / 10);
+    takenValueVector = dec_to_bin(takenValue);
+    if (takenValue < 0){
+        takenValue = 0;
+    }
+    printf("remaining value: %d \n taken value: %d \n", remainingValue, takenValue);
+
+    
+}
+
+void Value::resetTakenValue(){
+
+    takenValue = 0;
+    takenValueVector = dec_to_bin(takenValue);
+}
+
+void Value::changePaper(int32_t newRoll){
+
+    remainingValue = newRoll;
+    lastSavedRoll = newRoll;
+    remainingValueVector = dec_to_bin(remainingValue / 10);
+    takenValue = 0;
+    //takenValueVector = dec_to_bin(takenValue / 10);
+    takenValueVector = dec_to_bin(takenValue);
 }

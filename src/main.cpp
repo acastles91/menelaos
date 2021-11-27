@@ -13,815 +13,572 @@
 #include "driver/gpio.h"
 #include "avdweb_Switch/avdweb_Switch.h"
 #include "Bounce2.h"
+#include "pinout.h"
+#include "functions.h"
+#include "variables.h"
+#include "mode.h"
+#include "soc/soc.h"
+#include "soc/rtc_cntl_reg.h"
+#include "WiFi.h"
+#include <esp_task_wdt.h>
+#include "soc/rtc_wdt.h"
+
+#define WDT_TIMEOUT   3
+#define FREQ          5000
+#define BASIC_SETUP
+#define SETUP_PINMODE
+#define SETUP_NVS
+#define SETUP_INTERRUPTS
+#define SETUP_TIMERS
+#define SETUP_DISPLAY_PWM
+//#define SETUP_DISPLAY_INTERRUPT
+#define SETUP_WRITE_OUTPUTS
+#define SETUP_ENCODER
+#define SETUP_MODE
+#define SETUP_DEBOUNCERS
+//#define SETUP_WRITE_FLAGS
+//#define SETUP_BLINK
+#define SET_MODE
+
+//#define SETUP_TEST_COUNTER
 
-//#define CONFIG_ESP_INT_WDT_TIMEOUT_MS 1000
-
-//Pinout
-
-
-#define a1              27
-#define a2              26
-#define a3              18
-#define a4              19
-#define johnson         32
-#define oe              14
-#define clkPulse        12
-#define index_a1        0
-#define index_a2        1
-#define index_a3        2 
-#define index_a4        3
-#define toggleOe        13
-#define toggleAddress   5
-#define triggerCounter  21
-#define onesPin         23
-#define tensPin         25
-#define hundredsPin     4
-#define thousandsPin    22
-#define chA             5
-#define chB             21
-#define savePin         15
-#define EEPROM_SIZE     1
-#define bouncePin       34  
-#define builtinLed      2
-
-Value testValue;
-Value savedValue;
-
-//Switch
-
-//Switch  pushButton = Switch(34);
-//Switch pushButtonVCC = Switch(button, INPUT, HIGH); // button to VCC, 10k pull-down resistor, no internal pull-up resistor, HIGH polarity
-
-//Bounce2
-
-Bounce  bounce = Bounce();
-
-
-
-ESP32Encoder  rotary;
-unsigned long rotaryLastToggled;
-bool rotaryPaused = false;
-bool rotaryCheck = false;
-int64_t rotaryPrev;
-bool rotaryEnabled = false;
-bool ledState = LOW;
-
-
-
-// NVS
-
-int32_t lastValue = 0;
-nvs_handle_t my_handle;
-esp_err_t err;
-
-
-int storedValue = 0;
-int readValue = 0;
-volatile bool saveFlag = false;
-volatile bool resetFlag = false;
-
-
-
-
-//#define STORAGE_NAMESPACE "storage"
-
-// #if CONFIG_IDF_TARGET_ESP32C3
-// #define BOOT_MODE_PIN GPIO_NUM_9
-// #else
-// #define BOOT_MODE_PIN GPIO_NUM_0
-// #endif //CONFIG_IDF_TARGET_ESP32C3
-
-
-std::vector<int> addresses;
-std::vector<std::tuple<int, int, int, int>> numbers;
-enum Counter {ones, tens, hundreds, thousands};
-std::vector<std::bitset<4>> valueVector2;
-int testCounter;
-
-volatile bool writingFlag = false;
-volatile bool indexTuple = 0;
-volatile int counter = 0;
-volatile bool oeBool = false;
-volatile int longCounter = 0;
-volatile int unitIter = 0;
-volatile Counter display = Counter::ones;
-volatile bool counterChangeFlag = false;
-volatile bool addFlag = false;
-volatile bool changeMode;
-
-int a1Value = 0;
-int a2Value = 0;
-int a3Value = 0;
-int a4Value = 0;
-
-std::tuple<int, int, int, int>  one = std::make_tuple(0,0,0,1);
-std::tuple<int, int, int, int>  two = std::make_tuple(0,0,1,0);
-std::tuple<int, int, int, int>  three = std::make_tuple(0,0,1,1);
-std::tuple<int, int, int, int>  four = std::make_tuple(0,1,0,0);
-std::tuple<int, int, int, int>  five = std::make_tuple(0,1,0,1);
-std::tuple<int, int, int, int>  six = std::make_tuple(0,1,1,0);
-std::tuple<int, int, int, int>  seven = std::make_tuple(0,1,1,1);
-std::tuple<int, int, int, int>  eight = std::make_tuple(1,0,0,0);
-std::tuple<int, int, int, int>  nine = std::make_tuple(1,0,0,1);
-std::tuple<int, int, int, int>  zero = std::make_tuple(0,0,0,0);
-
-hw_timer_t * timer = NULL;
-hw_timer_t * timer2 = NULL;
-
-portMUX_TYPE timerMux = portMUX_INITIALIZER_UNLOCKED;
-volatile bool johnsonToggle = false;
-void setupVectors(){
-
-numbers.push_back(zero);
-numbers.push_back(one);
-numbers.push_back(two);
-numbers.push_back(three);
-numbers.push_back(four);
-numbers.push_back(five);
-numbers.push_back(six);
-numbers.push_back(seven);
-numbers.push_back(eight);
-numbers.push_back(nine);
-
-addresses.push_back(a1);
-addresses.push_back(a2);
-addresses.push_back(a3);
-addresses.push_back(a4);
-
-}
-
-void IRAM_ATTR trigger555(){
-
-  writingFlag = true;
-
-  if (counter == 10){
-    counter = 0;
-  }
-  Serial.println("--------------------");
-  Serial.println("Vector values");
-  a1Value = std::get<index_a1>(numbers[counter]);
-  Serial.print(std::get<index_a1>(numbers[counter]));
-  Serial.print(" ");
-  a2Value = std::get<index_a2>(numbers[counter]);
-  Serial.print(std::get<index_a2>(numbers[counter]));
-  Serial.print(" ");
-  a3Value = std::get<index_a3>(numbers[counter]);
-  Serial.print(std::get<index_a3>(numbers[counter]));
-  Serial.print(" ");
-  a4Value = std::get<index_a4>(numbers[counter]);
-  Serial.print(std::get<index_a4>(numbers[counter]));
-  Serial.print(" ");
-  Serial.println("");
-  Serial.println("Counter");
-  Serial.println(counter);
-  counter += 1;
-  Serial.println("--------------------");
-
-  
-}
-
-void IRAM_ATTR trigger_counter(){
-
-    //writingFlag = true;
-    int testCounter = longCounter;
-    std::vector<std::bitset<4>> valueVector;
-    valueVector = testValue.dec_to_bin(testCounter);
-
-    // Serial.println("Counter");
-    // Serial.println(testCounter);
-
-    // Serial.println("Length Value Vector");
-    // Serial.println(valueVector.size());
-    // Serial.println("--------------------");
-    // Serial.println("Value Vector");
-    // Serial.print(valueVector[0][0]);
-    // Serial.print(" ");
-    // Serial.print(valueVector[0][1]);
-    // Serial.print(" ");
-    // Serial.print(valueVector[0][2]);
-    // Serial.print(" ");
-    // Serial.print(valueVector[0][3]);
-    // Serial.print("--");
-    // Serial.print(valueVector[1][0]);
-    // Serial.print(" ");
-    // Serial.print(valueVector[1][1]);
-    // Serial.print(" ");
-    // Serial.print(valueVector[1][2]);
-    // Serial.print(" ");
-    // Serial.print(valueVector[1][3]);
-    // Serial.print("--");
-    // Serial.print(valueVector[2][0]);
-    // Serial.print(" ");
-    // Serial.print(valueVector[2][1]);
-    // Serial.print(" ");
-    // Serial.print(valueVector[2][2]);
-    // Serial.print(" ");
-    // Serial.print(valueVector[2][3]);
-    // Serial.print("--");
-
-    switch (display)
-    {
-    case ones:
-
-    digitalWrite(a1, valueVector[0][0]);
-    digitalWrite(a2, valueVector[0][1]);
-    digitalWrite(a3, valueVector[0][2]);
-    digitalWrite(a4, valueVector[0][3]);
-    // Serial.print(valueVector[0][0]);
-    // Serial.print(" ");
-    // Serial.print(valueVector[0][1]);
-    // Serial.print(" ");
-    // Serial.print(valueVector[0][2]);
-    // Serial.print(" ");
-    // Serial.print(valueVector[0][3]);
-    // Serial.print("--");
-
-    display = Counter::tens;
-
-      break;
-    
-    case tens:
-
-    digitalWrite(a1, valueVector[1][0]);
-    digitalWrite(a2, valueVector[1][1]);
-    digitalWrite(a3, valueVector[1][2]);
-    digitalWrite(a4, valueVector[1][3]);
-    // Serial.print(valueVector[1][0]);
-    // Serial.print(" ");
-    // Serial.print(valueVector[1][1]);
-    // Serial.print(" ");
-    // Serial.print(valueVector[1][2]);
-    // Serial.print(" ");
-    // Serial.print(valueVector[1][3]);
-    // Serial.print("--");
-
-    display = Counter::ones;
-      
-      break;
-
-    case hundreds:
-
-    digitalWrite(a1, valueVector[2][0]);
-    digitalWrite(a2, valueVector[2][1]);
-    digitalWrite(a3, valueVector[2][2]);
-    digitalWrite(a4, valueVector[2][3]);
-
-    display = Counter::thousands;
-      
-      break;
-    
-    case thousands:
-
-    digitalWrite(a1, valueVector[3][0]);
-    digitalWrite(a2, valueVector[3][1]);
-    digitalWrite(a3, valueVector[3][2]);
-    digitalWrite(a4, valueVector[3][3]);
-
-    display = Counter::ones;
-      
-      break;
-    }   
-
-}
-
-void triggerNonIsr(){
-
-    //writingFlag = true;
-    int testCounter = longCounter;
-    std::vector<std::bitset<4>> valueVector;
-    valueVector = testValue.dec_to_bin(testCounter);
-
-    //Serial.println("Counter");
-    //Serial.println(testCounter);
-
-    // Serial.println("Length Value Vector");
-    // Serial.println(valueVector.size());
-    // Serial.println("--------------------");
-    // Serial.println("Value Vector");
-    // Serial.print(valueVector[0][0]);
-    // Serial.print(" ");
-    // Serial.print(valueVector[0][1]);
-    // Serial.print(" ");
-    // Serial.print(valueVector[0][2]);
-    // Serial.print(" ");
-    // Serial.print(valueVector[0][3]);
-    // Serial.print("--");
-    // Serial.print(valueVector[1][0]);
-    // Serial.print(" ");
-    // Serial.print(valueVector[1][1]);
-    // Serial.print(" ");
-    // Serial.print(valueVector[1][2]);
-    // Serial.print(" ");
-    // Serial.print(valueVector[1][3]);
-    // Serial.print("--");
-    // Serial.print(valueVector[2][0]);
-    // Serial.print(" ");
-    // Serial.print(valueVector[2][1]);
-    // Serial.print(" ");
-    // Serial.print(valueVector[2][2]);
-    // Serial.print(" ");
-    // Serial.print(valueVector[2][3]);
-    // Serial.print("--");
-
-    switch (display)
-    {
-    case ones:
-
-    //Serial.println("ones");
-    digitalWrite(a1, valueVector[0][0]);
-    digitalWrite(a2, valueVector[0][1]);
-    digitalWrite(a3, valueVector[0][2]);
-    digitalWrite(a4, valueVector[0][3]);
-    // Serial.print(valueVector[0][0]);
-    // Serial.print(" ");
-    // Serial.print(valueVector[0][1]);
-    // Serial.print(" ");
-    // Serial.print(valueVector[0][2]);
-    // Serial.print(" ");
-    // Serial.print(valueVector[0][3]);
-    // Serial.println("");
-    display = Counter::tens;
-
-      break;
-    
-    case tens:
-
-    digitalWrite(a1, valueVector[1][0]);
-    digitalWrite(a2, valueVector[1][1]);
-    digitalWrite(a3, valueVector[1][2]);
-    digitalWrite(a4, valueVector[1][3]);
-    // Serial.println("tens");
-    // Serial.print(valueVector[1][0]);
-    // Serial.print(" ");
-    // Serial.print(valueVector[1][1]);
-    // Serial.print(" ");
-    // Serial.print(valueVector[1][2]);
-    // Serial.print(" ");
-    // Serial.print(valueVector[1][3]);
-    // Serial.println("");
-
-    display = Counter::ones;
-      
-      break;
-
-    case hundreds:
-
-    digitalWrite(a1, valueVector[2][0]);
-    digitalWrite(a2, valueVector[2][1]);
-    digitalWrite(a3, valueVector[2][2]);
-    digitalWrite(a4, valueVector[2][3]);
-
-    display = Counter::thousands;
-      
-      break;
-    
-    case thousands:
-
-    digitalWrite(a1, valueVector[3][0]);
-    digitalWrite(a2, valueVector[3][1]);
-    digitalWrite(a3, valueVector[3][2]);
-    digitalWrite(a4, valueVector[3][3]);
-
-    display = Counter::ones;     
-      break;
-    }   
-}
-void IRAM_ATTR toggle_oe(){
-
-  oeBool = !oeBool;
-  digitalWrite(oe, oeBool);
-}
-
-void IRAM_ATTR write_ones(){
-
-  portENTER_CRITICAL_ISR(&timerMux);
-
-    digitalWrite(a1, valueVector2[0][0]);
-    digitalWrite(a2, valueVector2[0][1]);
-    digitalWrite(a3, valueVector2[0][2]);
-    digitalWrite(a4, valueVector2[0][3]);
-    
-  portEXIT_CRITICAL_ISR(&timerMux);
-
-}
-
-void IRAM_ATTR write_tens(){
-
-  portENTER_CRITICAL_ISR(&timerMux);
-
-    digitalWrite(a1, valueVector2[1][0]);
-    digitalWrite(a2, valueVector2[1][1]);
-    digitalWrite(a3, valueVector2[1][2]);
-    digitalWrite(a4, valueVector2[1][3]);
-
-    portEXIT_CRITICAL_ISR(&timerMux);
-
-}
-
-void IRAM_ATTR write_hundreds(){
-
-  portENTER_CRITICAL_ISR(&timerMux);
-
-    digitalWrite(a1, valueVector2[2][0]);
-    digitalWrite(a2, valueVector2[2][1]);
-    digitalWrite(a3, valueVector2[2][2]);
-    digitalWrite(a4, valueVector2[2][3]);
-
-  portEXIT_CRITICAL_ISR(&timerMux);
-
-}
-
-void IRAM_ATTR write_thousands(){
-
-  portENTER_CRITICAL_ISR(&timerMux);
-
-    digitalWrite(a1, valueVector2[3][0]);
-    digitalWrite(a2, valueVector2[3][1]);
-    digitalWrite(a3, valueVector2[3][2]);
-    digitalWrite(a4, valueVector2[3][3]);
-
-    portEXIT_CRITICAL_ISR(&timerMux);
-
-}
-
-void IRAM_ATTR write_All(Value& valueArg){
-
-
-    //valueArg.numberValue = 97;
-    switch (valueArg.counter)
-    
-    {
-    case ones:
-
-    digitalWrite(a1, valueArg.valueVector[0][0]);
-    digitalWrite(a2, valueArg.valueVector[0][1]);
-    digitalWrite(a3, valueArg.valueVector[0][2]);
-    digitalWrite(a4, valueArg.valueVector[0][3]);
-
-    valueArg.counter = Value::Counter::tens;
-
-      break;
-    
-    case tens:
-
-    digitalWrite(a1, valueArg.valueVector[1][0]);
-    digitalWrite(a2, valueArg.valueVector[1][1]);
-    digitalWrite(a3, valueArg.valueVector[1][2]);
-    digitalWrite(a4, valueArg.valueVector[1][3]);
-
-
-    valueArg.counter = Value::Counter::hundreds;
-      
-      break;
-
-    case hundreds:
-
-    digitalWrite(a1, valueArg.valueVector[2][0]);
-    digitalWrite(a2, valueArg.valueVector[2][1]);
-    digitalWrite(a3, valueArg.valueVector[2][2]);
-    digitalWrite(a4, valueArg.valueVector[2][3]);
-
-    valueArg.counter = Value::Counter::thousands;
-      
-      break;
-    
-    case thousands:
-
-    digitalWrite(a1, valueArg.valueVector[3][0]);
-    digitalWrite(a2, valueArg.valueVector[3][1]);
-    digitalWrite(a3, valueArg.valueVector[3][2]);
-    digitalWrite(a4, valueArg.valueVector[3][3]);
-
-    valueArg.counter = Value::Counter::ones;
-      
-      break;
-
-  }
-}
-
-void IRAM_ATTR toggle_a4(){
-
-  a4Value = !a4Value;
-  digitalWrite(a4, a4Value);
-
-}
-
-void timerDisplay(){
-
-  portENTER_CRITICAL_ISR(&timerMux);
-  //counterChangeFlag = true;
-  //write_All(testValue);
-  digitalWrite(johnson, !digitalRead(johnson));
-
-  portEXIT_CRITICAL_ISR(&timerMux);
-
-}
-
-void counterTimer(){
-
-  addFlag = true;
-
-}
-
-void checkRotary(){
-
-  rotaryCheck = true;
-}
-
-int32_t readLastValue(){
-
-// Open
-    printf("\n");
-    printf("Opening Non-Volatile Storage (NVS) handle... ");
-    err = nvs_open("storage", NVS_READWRITE, &my_handle);
-    if (err != ESP_OK) {
-        printf("Error (%s) opening NVS handle!\n", esp_err_to_name(err));
-    } else {
-        printf("Done\n");
-    
-    // Read
-        printf("Reading last value counter from NVS ... ");
-         // value will default to 0, if not set yet in NVS
-        err = nvs_get_i32(my_handle, "saved_value", &lastValue);
-        switch (err) {
-            case ESP_OK:
-                printf("Done\n");
-                printf("Last value = %d\n", lastValue);
-                break;
-            case ESP_ERR_NVS_NOT_FOUND:
-                printf("The value is not initialized yet!\n");
-                break;
-            default :
-                printf("Error (%s) reading!\n", esp_err_to_name(err));
-        }
-    return lastValue;
-  }
-}
-
-void IRAM_ATTR saveLastValue(){
-
-    //portENTER_CRITICAL_ISR(&timerMux);
-
-
-    //printf("Updating saved value in NVS ... ");
-    err = nvs_set_i32(my_handle, "saved_value", testValue.numberValue);
-    //printf((err != ESP_OK) ? "Failed!\n" : "Done\n");
-
-    // Commit written value.
-    // After setting any values, nvs_commit() must be called to ensure changes are written
-    // to flash storage. Implementations may write to storage at other times,
-    // but this is not guaranteed.
-    //printf("Committing updates in NVS ... ");
-    err = nvs_commit(my_handle);
-    //printf((err != ESP_OK) ? "Failed!\n" : "Done\n");
-
-    // Close
-    nvs_close(my_handle);
-
-    Serial.println("Valued saved from function saveLastValue");
-
-    //portENTER_CRITICAL_ISR(&timerMux);
-
-
-}
-
-void IRAM_ATTR saveShutdown(){
-
-  portENTER_CRITICAL_ISR(&timerMux);
-  
-  saveFlag = true;
-
-  portEXIT_CRITICAL_ISR(&timerMux);
-
-  // nvs_handle my_handle;
-  // esp_err_t err;
-
-  // err = nvs_open(STORAGE_NAMESPACE, NVS_READWRITE, &my_handle);
-  // if (err != ESP_OK) return err;
-
-  // // Read
-  // int32_t restart_counter = 0; // value will default to 0, if not set yet in NVS
-  // err = nvs_get_i32(my_handle, "restart_conter", &restart_counter);
-  // if (err != ESP_OK && err != ESP_ERR_NVS_NOT_FOUND) return err;
-
-  // // Write
-  // restart_counter++;
-  // err = nvs_set_i32(my_handle, "restart_conter", restart_counter);
-  // if (err != ESP_OK) return err;
-
-  // // Commit written value.
-  // // After setting any values, nvs_commit() must be called to ensure changes are written
-  // // to flash storage. Implementations may write to storage at other times,
-  // // but this is not guaranteed.
-  // err = nvs_commit(my_handle);
-  // if (err != ESP_OK) return err;
-
-  // // Close
-  // nvs_close(my_handle);
-  // return ESP_OK;
-
-}
-
-void IRAM_ATTR powerUpTest(){
-
-  portENTER_CRITICAL_ISR(&timerMux);
-
-  timerAttachInterrupt(timer2, &checkRotary, true);
-  timerAlarmWrite(timer2, 5000, true);
-  timerAlarmEnable(timer2);
-
-  portEXIT_CRITICAL_ISR(&timerMux);
-
-}
 
 void setup() {
 
+  #ifdef  BASIC_SETUP
+
   Serial.begin(115200);
+  esp_task_wdt_init(WDT_TIMEOUT, true);
+  esp_task_wdt_add(NULL);
+  WRITE_PERI_REG(RTC_CNTL_BROWN_OUT_REG, 0); //disable   detector
+  WiFi.mode(WIFI_MODE_NULL);
+  btStop();
+  displayedValue = dec_to_bin(8888);
+  gpio_pullup_en(GPIO_NUM_15);
 
-  err = nvs_flash_init();
+  #endif
 
-  // Initialize NVS
-
-    // if (err == ESP_ERR_NVS_NO_FREE_PAGES || err == ESP_ERR_NVS_NEW_VERSION_FOUND) {
-    //     // NVS partition was truncated and needs to be erased
-    //     // Retry nvs_flash_init
-    //     ESP_ERROR_CHECK(nvs_flash_erase());
-    //     err = nvs_flash_init();
-    // }
-    // ESP_ERROR_CHECK( err );
-
-
-  ESP32Encoder::useInternalWeakPullResistors=UP;
-
-  //rotary.attachHalfQuad(chA, chB);
-  
+  #ifdef  SETUP_PINMODE
+  // //PinMode
   pinMode(chA, INPUT_PULLDOWN);
   pinMode(chB, INPUT_PULLDOWN);
   pinMode(a1, OUTPUT);
   pinMode(a2, OUTPUT);
   pinMode(a3, OUTPUT);
   pinMode(a4, OUTPUT);
-  pinMode(oe, OUTPUT);
+  pinMode(dp, OUTPUT);
   pinMode(johnson, OUTPUT);
   pinMode(onesPin, INPUT);
   pinMode(tensPin, INPUT);
   pinMode(hundredsPin, INPUT);
   pinMode(thousandsPin, INPUT);
   pinMode(builtinLed, OUTPUT);
+  pinMode(zeroFunc, OUTPUT);
+  pinMode(configPin, OUTPUT);
+  pinMode(modePin, OUTPUT);
+  pinMode(unused, OUTPUT);
 
-  rotary.attachSingleEdge(chA, chB);
-  rotary.setCount(0); //??
-  rotary.clearCount();
-  rotaryLastToggled = millis();
-
-  changeMode = true;
+  #endif
   
-  //attachInterrupt(clkPulse, trigger555, RISING);
-  //attachInterrupt(toggleOe, toggle_oe, RISING);    
-  attachInterrupt(onesPin, write_ones, RISING);
-  attachInterrupt(tensPin, write_tens, RISING); 
-  attachInterrupt(hundredsPin, write_hundreds, RISING);
-  attachInterrupt(thousandsPin, write_thousands, RISING);
-  attachInterrupt(savePin, saveShutdown, RISING);  
-  //attachInterrupt(savePin, powerUpTest, FALLING);  
+  //NVS
+  #ifdef SETUP_NVS
 
-  //attachInterrupt(toggleAddress, toggle_a4, RISING);
-  //attachInterrupt(triggerCounter, trigger_counter, RISING);
+  err = nvs_flash_init();
+  if (err == ESP_ERR_NVS_NO_FREE_PAGES || err == ESP_ERR_NVS_NEW_VERSION_FOUND) {
+    // NVS partition was truncated and needs to be erased
+    // Retry nvs_flash_init
+    ESP_ERROR_CHECK(nvs_flash_erase());
+    err = nvs_flash_init();
+    }
+  ESP_ERROR_CHECK( err );
+  int32_t lastValueArgument = readLastValue();
+  value.setNumber(lastValueArgument);
+
+  err2 = nvs_flash_init();
+  if (err2 == ESP_ERR_NVS_NO_FREE_PAGES || err == ESP_ERR_NVS_NEW_VERSION_FOUND) {
+    ESP_ERROR_CHECK(nvs_flash_erase());
+    err2 = nvs_flash_init();
+    }
+  ESP_ERROR_CHECK(err2);
+  int32_t lastPaperValue = readLastPaperValue();
+  oldPaperLength = lastPaperValue;
+  zeroFlag = false;
+  
+  #endif
+  
+  #ifdef SETUP_INTERRUPTS
+  // Interrupts and timers
+
+  attachInterrupt(thousandsPin, write_hundreds, RISING);
+  attachInterrupt(onesPin, write_tens, RISING); 
+  attachInterrupt(tensPin, write_ones, RISING);
+  attachInterrupt(hundredsPin, write_thousands, RISING);
+  attachInterrupt(savePin, shutDown, RISING); 
+  esp_sleep_enable_ext0_wakeup(GPIO_NUM_15, LOW);
+
+
+  #endif
+
+  #ifdef SETUP_DISPLAY_INTERRUPT
+
+  timer = timerBegin(0, 80, true);
+  timerAttachInterrupt(timer, &timerDisplay, true);
+  timerAlarmWrite(timer, 500000, true);
+  timerAlarmEnable(timer);
+
+  #endif
+
+  #ifdef SETUP_DISPLAY_PWM
+
+  frequency = 4000;
+  setupPwm(pwmChannel, frequency, resolution);
+
+  #endif
+
+  #ifdef SETUP_TIMERS
+
+  timer2 = timerBegin(1, 80, true);
+  timerAttachInterrupt(timer2, &checkRotary, true);
+  timerAlarmWrite(timer2, 10000, true);
+  timerAlarmEnable(timer2);
+
+  #endif
+
+  #ifdef  SETUP_WRITE_OUTPUTS
+
+  // Turn off outputs
+
+  digitalWrite(a1, LOW);
+  digitalWrite(a2, LOW);
+  digitalWrite(a3, LOW);
+  digitalWrite(a4, LOW);
+  //digitalWrite(johnson, LOW);
+  digitalWrite(builtinLed, LOW);
+  digitalWrite(zeroFunc, LOW);
+  digitalWrite(configPin, LOW);
+  digitalWrite(modePin, LOW);
+  digitalWrite(unused, LOW);
+
+  #endif
+
+  #ifdef SETUP_ENCODER
+  // //Rotary setup
+  
+  ESP32Encoder::useInternalWeakPullResistors = UP; // Enable the weak pull down resistors
+  rotary.attachSingleEdge(chA, chB);
+  //rotary.attachSingleEdge(chA,chB);  // Attach pins for use as encoder pins
+  rotary.setCount(0); //??
+  rotary.clearCount();//
+  rotaryPrev = 0;
+  //rotaryPrev = rotary.getCount();
+  rotaryLastToggled = millis();
+  rotaryEnabled = true;
+
+  #endif
+
+  #ifdef  SETUP_DEBOUNCERS
+
+    //Bounces
+
+  bounceZero.attach(zeroFunc, INPUT);
+  bounceZero.interval(5);
+  bounceConfig.attach(configPin, INPUT);
+  bounceConfig.interval(5);
+  bounceMode.attach(modePin, INPUT);
+  bounceMode.interval(5);
+
+  #endif
+
+  #ifdef SETUP_WRITE_FLAGS
+
+  // //flags
+  saveFlag = false;
+  changeMode = true;
+
+ 
+
+  ledState = false;
+
+  #endif
+
+  #ifdef SETUP_TEST_COUNTER
   
   timer = timerBegin(0, 80, true);
   timerAttachInterrupt(timer, &timerDisplay, true);
-  //timerAlarmWrite(timer, 2000, true);
-  timerAlarmWrite(timer, 2000, true);
+  timerAlarmWrite(timer, 500000, true);
   timerAlarmEnable(timer);
 
   //Test counter
-  timer2 = timerBegin(1, 80, true);
-  timerAttachInterrupt(timer2, &counterTimer, true);
-  timerAlarmWrite(timer2, 100000, true);
-  timerAlarmEnable(timer2);
-
-
-  // Encoder check
-
   // timer2 = timerBegin(1, 80, true);
-  // timerAttachInterrupt(timer2, &checkRotary, true);
-  // timerAlarmWrite(timer2, 5000, true);
+  // timerAttachInterrupt(timer2, &counterTimer, true);
+  // timerAlarmWrite(timer2, 100000, true);
   // timerAlarmEnable(timer2);
-  // rotaryEnabled = true;
 
-  setupVectors();
-  digitalWrite(johnson, johnsonToggle);
+  #endif
 
-  rotaryPrev = rotary.getCount();
-  int32_t lastValueArgument = readLastValue();
+#ifdef SETUP_MODE
+
   
-  testValue.setNumber(lastValueArgument);
-  rotary.setCount(lastValueArgument);
+  mode = (digitalRead(modePin)) ? Mode::Remaining : Mode::Taken;
 
-  bounce.attach(bouncePin, INPUT);
-  bounce.interval(5);
-  digitalWrite(builtinLed, ledState);
-  digitalWrite(chA, LOW);
-  
+  setModeFlag = false;
+  fastFlag = false;
+  sum = 1;
 
-
-  //readValue = EEPROM.read(0);
-
-  //Serial.println("EEPROM Value = " + String((int)EEPROM.read(0)));
+#endif
 
 
+  #ifdef  SETUP_BLINK
+
+
+  for (int i = 0; i < 6; i ++){
+    ledState = !ledState; // SET ledState TO THE OPPOSITE OF ledState
+    digitalWrite(builtinLed,ledState); // WRITE THE NEW ledState
+    delayMicroseconds(250000);
+    Serial.println("Aqui");
+  }
+  #endif
+  // digitalWrite(unused, LOW);
+  //Serial.println(value.getRemainingValue());
+  rotaryPrev = 0;
 
 }
 
 void loop() {
 
-  valueVector2 = testValue.valueVector;
 
-  if(changeMode){
-    valueVector2 = testValue.valueVector;
-    changeMode = false;
+  //This restarts the watchdog timer
+esp_task_wdt_reset();
+
+#ifdef SET_MODE
+
+while(mode == Mode::Set){
+  esp_task_wdt_reset();
+  int32_t currentMillis = millis();
+
+  plusFlag = (digitalRead(modePin)) ? false : true;
+
+  if(currentMillis - startTimer  > 10000 ){
+    setModeFlag = false;
+    printf("Current Millis: %d \n Start timer: %d\n", currentMillis, startTimer);
   }
 
-  if (saveFlag){
-    //Serial.println("Save flag triggered");
-    saveLastValue();
-    // EEPROM.write(0, testValue.numberValue);
-    // EEPROM.commit();
+  if (!setModeFlag){
+    frequency = 4000;
+    setupPwm(pwmChannel, frequency, resolution);
+    mode = (digitalRead(modePin)) ? Mode::Remaining : Mode::Taken;
+  }
+  //Serial.println(ESP.getFreeHeap());
+  displayedValue = dec_to_bin(newPaperLength / 10); 
+  bounceMode.update();
+  bounceZero.update();
+  bounceConfig.update();
 
+  // if (bounceMode.changed()) {
+  //   startTimer = millis();
+  //   if (bounceMode.read()){
+  //     plusFlag = false;  
+  //     Serial.println("plusFlag: LOW"); 
+  //   }
+  //   else{
+  //     plusFlag = true;
+  //     Serial.println("plusFlag: HIGH"); 
+  //   }
+  // }
 
-    if(rotaryEnabled){
-      timerAlarmDisable(timer2);		// stop alarm
-      timerDetachInterrupt(timer2);
-      timerEnd(timer2);
-      rotaryEnabled = false;
-      rotary.pauseCount();
-      Serial.println("Rotary disabled");
-
+  if (bounceZero.fell()){
+    startTimer = millis();
+    while (!digitalRead(zeroFunc) && plusFlag){
+      startTimer = millis();
+      newPaperLength +=sum;
+      if (!fastFlag){
+        delayTime = 30000;
       }
+      else if (fastFlag){
+        delayTime = 2000;
+      }
+      else if (veryFastFlag){
+        delayTime = 100;
+      }
+      delayMicroseconds(delayTime);
+      rtc_wdt_feed();
+      displayedValue = dec_to_bin(newPaperLength / 10); 
+      esp_task_wdt_reset();
+      if (bounceZero.currentDuration() > 1000){
+          fastFlag = true;
+          veryFastFlag = false;
+        }
+      else{
+        fastFlag = false;
+        veryFastFlag = false;
+      }
+      if (fastFlag && bounceZero.currentDuration() > 4000){
+        veryFastFlag = true;
+      }
+      if (newPaperLength > 100000){
+        newPaperLength = 99999;
+        }
+      }
+    while (!digitalRead(zeroFunc) && !plusFlag){
+      startTimer = millis();
+      newPaperLength -=sum;
+      startTimer = millis();
+      if (!fastFlag){
+        delayTime = 30000;
+      }
+      else if (fastFlag){
+        delayTime = 2000;
+      }
+      else if (veryFastFlag){
+        delayTime = 100;
+      }
+      delayMicroseconds(delayTime);
+      rtc_wdt_feed();
+      displayedValue = dec_to_bin(newPaperLength / 10); 
+      esp_task_wdt_reset();
 
-    else{
-
-      timer2 = timerBegin(1, 80, true);
-      timerAttachInterrupt(timer2, &checkRotary, true);
-      timerAlarmWrite(timer2, 5000, true);
-      timerAlarmEnable(timer2);
-      rotaryEnabled = true;
-      rotary.resumeCount();
-      Serial.println("Rotary enabled");
-
-
+      if (bounceZero.currentDuration() > 1000){
+          fastFlag = true;
+          veryFastFlag = false;
+        }
+      else if(fastFlag && bounceZero.currentDuration() > 4000){
+        fastFlag = false;
+        veryFastFlag == true;
+      }
+      if (newPaperLength < 1 ){
+        newPaperLength = 0;
+        }
+      } 
     }
-    // timerAttachInterrupt(timer2, &checkRotary, true);
-    // timerAlarmWrite(timer2, 5000, true);
-    // timerAlarmEnable(timer2);
-    saveFlag = false;
+    fastFlag = false;
+    veryFastFlag = false;
+    
+  if (bounceConfig.changed()){
+    startTimer = millis();
+    while (!digitalRead(configPin) && setModeFlag) {
+      Serial.println(bounceConfig.currentDuration());
+      Serial.println(digitalRead(configPin));
+      if (bounceConfig.currentDuration() > 1000){
+        rtc_wdt_feed();
+        Serial.println("Aqui");
+        plusFlag = digitalRead(modePin);
+        oldPaperLength = newPaperLength;
+        value.changePaper(newPaperLength);
+        //esp_sleep_disable_wakeup_source(ESP_SLEEP_WAKEUP_GPIO = 15);
+        //esp_sleep_disable_wakeup_source(GPIO_NUM_15);
+        detachInterrupt(GPIO_NUM_15);
+        detachInterrupt(GPIO_NUM_4);
+        detachInterrupt(GPIO_NUM_23);
+        detachInterrupt(GPIO_NUM_25);
+        detachInterrupt(GPIO_NUM_22);
+        ledcDetachPin(GPIO_NUM_32);
 
+        err2 = nvs_set_i32(paperHandle, "paper_value", newPaperLength);
+        err2 = nvs_commit(paperHandle);
+        nvs_close(paperHandle);
+        Serial.println("Paper value saved");
+        
+        attachInterrupt(thousandsPin, write_hundreds, RISING);
+        attachInterrupt(onesPin, write_tens, RISING); 
+        attachInterrupt(tensPin, write_ones, RISING);
+        attachInterrupt(hundredsPin, write_thousands, RISING);
+        attachInterrupt(savePin, shutDown, RISING); 
+        Serial.println("En el loop");
+        setModeFlag = false;
+      }
+      Serial.println("Fuera del loop");
+    }
+  }
+}
+#endif
+
+#ifdef SETUP_MODE
+
+switch(mode){
+    case Mode::Remaining:  {
+      displayedValue = value.remainingValueVector;
+      }
+    break;
+    case Mode::Taken:  {
+      displayedValue = value.takenValueVector;
+    }
+    break;
+  }
+  if(changeMode){
+    Serial.println("Mode changed");
+    changeMode = false;
+    switch (mode){
+      case Mode::Remaining:{
+        mode = Mode::Taken;
+        Serial.println("Mode taken");
+        //value.updateValues((int32_t)rotaryPrev);
+      }
+      break;
+      case Mode::Taken:{
+        mode = Mode::Remaining;
+        Serial.println("Mode remaining");
+        //value.updateValues((int32_t)rotaryPrev * -1);
+      }
+      break;
+    }
   }
 
+#endif
 
-  //Test counter
-  
-  if (addFlag){
-      
-      Serial.println(testValue.numberValue);
-      testValue.addNumber(1);
-      Serial.println(testValue.numberValue);
-      Serial.println(testValue.addedNumber);
-      Serial.println(testValue.getNumberValue());
-      addFlag = false;
-  }
+#ifdef SETUP_NVS
 
+
+    if (shutDownFlag){
+      //detachInterrupt(savePin);
+      //rtc_wdt_feed();
+      //vTaskDelay(pdMS_TO_TICKS(100));
+      detachInterrupt(GPIO_NUM_15);
+      detachInterrupt(GPIO_NUM_4);
+      detachInterrupt(GPIO_NUM_23);
+      detachInterrupt(GPIO_NUM_25);
+      detachInterrupt(GPIO_NUM_22);
+      ledcDetachPin(GPIO_NUM_32);
+      shutDownFlag = false;
+      rtc_wdt_feed();
+      saveLastValue2();
+      ledState = !ledState; // SET ledState TO THE OPPOSITE OF ledState
+      digitalWrite(builtinLed,ledState); // WRITE THE NEW ledState  
+      ledState = !ledState; // SET ledState TO THE OPPOSITE OF ledState
+      digitalWrite(builtinLed,ledState); // WRITE THE NEW ledState
+      displayedValue = dec_to_bin(8888);
+      esp_deep_sleep_start();
+    }
+
+    #endif
+
+#ifdef SETUP_ENCODER
   
   if (rotaryCheck){
 
     if (rotary.getCount() != rotaryPrev){
-      
-
-      Serial.println(testValue.numberValue);
-      testValue.addNumber((int32_t)rotary.getCount() - (int32_t)rotaryPrev);
-      Serial.println("Rotary count: " + String((int32_t)rotary.getCount()));
-      Serial.println("Number value Rotary: " + String(testValue.numberValue));
+      if (rotary.getCount() > rotaryPrev){
+        value.addNumber(1);
+        value.updateValues(-1);
+      } 
+      else if (rotary.getCount() < rotaryPrev){
+        value.addNumber(-1);
+        value.updateValues(1);
+      }
       rotaryPrev = rotary.getCount();
     }
+    rotaryCheck = false;
   }
+
+#endif
+
+#ifdef SETUP_DEBOUNCERS
+
+  bounceZero.update();
+  bounceConfig.update();
+  bounceMode.update();
+
+    if ( bounceMode.changed()) {
+      changeMode = true;  
+    }
   
-  rotaryCheck = false;
-
-  //bounce poll
-
-  bounce.update();
-
-  // <Bounce>.changed() RETURNS true IF THE STATE CHANGED (FROM HIGH TO LOW OR LOW TO HIGH)
-  if ( bounce.changed() ) {
-    // THE STATE OF THE INPUT CHANGED
-    // GET THE STATE
-    int deboucedInput = bounce.read();
-    // IF THE CHANGED VALUE IS LOW
-    if ( deboucedInput == LOW ) {
-      ledState = !ledState; // SET ledState TO THE OPPOSITE OF ledState
-      digitalWrite(builtinLed,ledState); // WRITE THE NEW ledState
+  if ( bounceZero.changed() && mode == Mode::Taken) {
+        esp_task_wdt_reset();
+        value.resetTakenValue();
+        zeroFlag = false;
+  }
+  if (bounceConfig.changed()){
+    while (!digitalRead(configPin) && !setModeFlag) {
+      Serial.println(bounceConfig.currentDuration());
+      esp_task_wdt_reset();
+      if (bounceConfig.currentDuration() > 5000){
+        esp_task_wdt_reset();
+        Serial.println("Aqui");
+        mode = Mode::Set;
+        ledcDetachPin(johnson);
+        frequency = 100;
+        setupPwm(pwmChannel, frequency, resolution);
+        plusFlag = digitalRead(modePin);
+        setModeFlag = true;
+        newPaperLength = oldPaperLength;
+        startTimer = millis();
+      }
     }
   }
-
-  //Serial.println("Encoder count = " + String((int32_t)rotary.getCount()));
 }
+//}
+#endif
+
+
+
+//   //Flags
+
+  
+//   //   //Serial.println("Save flag triggered");
+//   //   // EEPROM.write(0, testValue.remainingValue);
+//   //   // EEPROM.commit();
+
+  // if (saveFlag){
+
+  //   //ESP.deepSleep(0);
+
+  // }
+
+//   //Serial.println("number value: " + String(value.remainingValue));
+  
+
+//   //     //timerAlarmDisable(timer2);		// stop alarm
+//   // //timerAlarmDisable(timer);
+//   // //timerDetachInterrupt(timer2);
+//   // //timerDetachInterrupt(timer);
+//   //   timerEnd(timer2);
+//   //   timerEnd(timer);
+//   //   saveLastValue();
+//   //   saveFlag = false;
+
+
+//   //   //if(rotaryEnabled){
+      
+//   //     // timerAlarmDisable(timer2);		// stop alarm
+//   //     // timerAlarmDisable(timer);
+//   //     // timerDetachInterrupt(timer2);
+//   //     // timerDetachInterrupt(timer);
+//   //     // timerEnd(timer2);
+//   //     // timerEnd(timer);
+
+//   //     //rotaryEnabled = false;
+//   //     //rotary.pauseCount();
+//   //     //Serial.println("Rotary disabled");
+
+//   //     //}
+
+//   //   // else{
+
+//   //   //   timer2 = timerBegin(1, 80, true);
+//   //   //   timerAttachInterrupt(timer2, &checkRotary, true);
+//   //   //   timerAlarmWrite(timer2, 5000, true);
+//   //   //   timerAlarmEnable(timer2);
+//   //   //   rotaryEnabled = true;
+//   //   //   rotary.resumeCount();
+//   //   //   Serial.println("Rotary enabled");
+
+//   //   // }
+//   //   // timerAttachInterrupt(timer2, &checkRotary, true);
+//   //   // timerAlarmWrite(timer2, 5000, true);
+//   //   // timerAlarmEnable(timer2);
+
+//   // }
+
+//   //Test counter
+  
+//   // if (addFlag){
+      
+//   //     Serial.println(testValue.remainingValue);
+//   //     testValue.addNumber(1);
+//   //     Serial.println(testValue.remainingValue);
+//   //     Serial.println(testValue.addedNumber);
+//   //     Serial.println(testValue.getremainingValue());
+//   //     addFlag = false;
+//   // }
+
+// 
+  //Serial.println("Encoder count = " + String((int32_t)rotary.getCount()));

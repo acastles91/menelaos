@@ -1,0 +1,258 @@
+EESchema Schematic File Version 4
+EELAYER 30 0
+EELAYER END
+$Descr A4 11693 8268
+encoding utf-8
+Sheet 3 5
+Title ""
+Date ""
+Rev ""
+Comp ""
+Comment1 ""
+Comment2 ""
+Comment3 ""
+Comment4 ""
+$EndDescr
+Text GLabel 2500 1850 1    39   Input ~ 0
+blue
+Text GLabel 1000 2300 0    39   Input ~ 0
+white
+Text GLabel 1700 2500 0    39   Input ~ 0
+red
+Text GLabel 3000 2300 2    39   Input ~ 0
+yellow
+$Comp
+L power:+5VP #PWR0147
+U 1 1 61CD4F35
+P 3400 1050
+F 0 "#PWR0147" H 3400 900 50  0001 C CNN
+F 1 "+5VP" H 3415 1223 50  0000 C CNN
+F 2 "" H 3400 1050 50  0001 C CNN
+F 3 "" H 3400 1050 50  0001 C CNN
+	1    3400 1050
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	3400 1050 3400 1250
+Wire Wire Line
+	2500 1850 2500 2100
+Wire Wire Line
+	3000 2300 2800 2300
+Text GLabel 2650 3050 0    39   Input ~ 0
+yellow
+Wire Wire Line
+	2650 3050 2650 3250
+$Comp
+L power:GND #PWR0149
+U 1 1 61CDFDC0
+P 2650 4150
+F 0 "#PWR0149" H 2650 3900 50  0001 C CNN
+F 1 "GND" H 2655 3977 50  0000 C CNN
+F 2 "" H 2650 4150 50  0001 C CNN
+F 3 "" H 2650 4150 50  0001 C CNN
+	1    2650 4150
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	2800 2500 3100 2500
+Text GLabel 3250 3650 2    39   Input ~ 0
+_chA
+Text GLabel 4000 3050 0    39   Input ~ 0
+black
+Text GLabel 4600 3650 2    39   Input ~ 0
+_chB
+Wire Wire Line
+	1700 2500 2200 2500
+Wire Wire Line
+	1000 2300 2200 2300
+$Comp
+L power:GND #PWR0153
+U 1 1 61CE535D
+P 5500 4700
+F 0 "#PWR0153" H 5500 4450 50  0001 C CNN
+F 1 "GND" H 5505 4527 50  0000 C CNN
+F 2 "" H 5500 4700 50  0001 C CNN
+F 3 "" H 5500 4700 50  0001 C CNN
+	1    5500 4700
+	1    0    0    -1  
+$EndComp
+$Comp
+L power:GND #PWR0154
+U 1 1 61CE598B
+P 3850 5400
+F 0 "#PWR0154" H 3850 5150 50  0001 C CNN
+F 1 "GND" H 3855 5227 50  0000 C CNN
+F 2 "" H 3850 5400 50  0001 C CNN
+F 3 "" H 3850 5400 50  0001 C CNN
+	1    3850 5400
+	1    0    0    -1  
+$EndComp
+$Comp
+L knownParts:DIN-5-TerminalBlock J23
+U 1 1 61F73646
+P 2500 2400
+F 0 "J23" H 2500 2125 50  0000 C CNN
+F 1 "DIN-5-TerminalBlock" H 2500 2034 50  0000 C CNN
+F 2 "TerminalBlock:TerminalBlock_bornier-5_P5.08mm" H 2500 2400 50  0001 C CNN
+F 3 "http://www.mouser.com/ds/2/18/40_c091_abd_e-75918.pdf" H 2500 2400 50  0001 C CNN
+	1    2500 2400
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	4700 4500 4700 4650
+Wire Wire Line
+	5000 4850 5000 4650
+Wire Wire Line
+	5000 4650 5500 4650
+Wire Wire Line
+	5500 4650 5500 4700
+Connection ~ 5000 4650
+Wire Wire Line
+	5000 4650 5000 4500
+Wire Wire Line
+	4300 4650 4700 4650
+Connection ~ 4700 4650
+Wire Wire Line
+	4700 4650 4700 4850
+$Comp
+L Device:R R30
+U 1 1 61834F16
+P 3200 5250
+F 0 "R30" V 2993 5250 50  0000 C CNN
+F 1 "220" V 3084 5250 50  0000 C CNN
+F 2 "Resistor_THT:R_Axial_DIN0204_L3.6mm_D1.6mm_P7.62mm_Horizontal" V 3130 5250 50  0001 C CNN
+F 3 "~" H 3200 5250 50  0001 C CNN
+	1    3200 5250
+	0    1    1    0   
+$EndComp
+$Comp
+L Device:R R31
+U 1 1 61834F1C
+P 3200 5600
+F 0 "R31" V 2993 5600 50  0000 C CNN
+F 1 "100" V 3084 5600 50  0000 C CNN
+F 2 "Resistor_THT:R_Axial_DIN0204_L3.6mm_D1.6mm_P7.62mm_Horizontal" V 3130 5600 50  0001 C CNN
+F 3 "~" H 3200 5600 50  0001 C CNN
+	1    3200 5600
+	0    1    1    0   
+$EndComp
+Wire Wire Line
+	3050 5250 3050 5400
+Wire Wire Line
+	3350 5600 3350 5400
+Wire Wire Line
+	3350 5400 3850 5400
+Connection ~ 3350 5400
+Wire Wire Line
+	3350 5400 3350 5250
+Wire Wire Line
+	2650 5400 3050 5400
+Connection ~ 3050 5400
+Wire Wire Line
+	3050 5400 3050 5600
+$Comp
+L Device:R R35
+U 1 1 6182D56D
+P 4850 4850
+F 0 "R35" V 4643 4850 50  0000 C CNN
+F 1 "100" V 4734 4850 50  0000 C CNN
+F 2 "Resistor_THT:R_Axial_DIN0204_L3.6mm_D1.6mm_P7.62mm_Horizontal" V 4780 4850 50  0001 C CNN
+F 3 "~" H 4850 4850 50  0001 C CNN
+	1    4850 4850
+	0    1    1    0   
+$EndComp
+$Comp
+L Device:R R34
+U 1 1 6182D15D
+P 4850 4500
+F 0 "R34" V 4643 4500 50  0000 C CNN
+F 1 "220" V 4734 4500 50  0000 C CNN
+F 2 "Resistor_THT:R_Axial_DIN0204_L3.6mm_D1.6mm_P7.62mm_Horizontal" V 4780 4500 50  0001 C CNN
+F 3 "~" H 4850 4500 50  0001 C CNN
+	1    4850 4500
+	0    1    1    0   
+$EndComp
+$Comp
+L Device:R R28
+U 1 1 61837E5E
+P 2650 3400
+F 0 "R28" H 2580 3354 50  0000 R CNN
+F 1 "50" H 2580 3445 50  0000 R CNN
+F 2 "Resistor_THT:R_Axial_DIN0204_L3.6mm_D1.6mm_P7.62mm_Horizontal" V 2580 3400 50  0001 C CNN
+F 3 "~" H 2650 3400 50  0001 C CNN
+	1    2650 3400
+	-1   0    0    1   
+$EndComp
+$Comp
+L Device:R R29
+U 1 1 61838613
+P 2650 3850
+F 0 "R29" H 2580 3804 50  0000 R CNN
+F 1 "220" H 2580 3895 50  0000 R CNN
+F 2 "Resistor_THT:R_Axial_DIN0204_L3.6mm_D1.6mm_P7.62mm_Horizontal" V 2580 3850 50  0001 C CNN
+F 3 "~" H 2650 3850 50  0001 C CNN
+	1    2650 3850
+	-1   0    0    1   
+$EndComp
+Wire Wire Line
+	2650 3550 2650 3650
+Wire Wire Line
+	2650 4000 2650 4150
+Wire Wire Line
+	3250 3650 2650 3650
+Connection ~ 2650 3650
+Wire Wire Line
+	2650 3650 2650 3700
+Wire Wire Line
+	4000 3050 4000 3250
+$Comp
+L power:GND #PWR012
+U 1 1 6183B854
+P 4000 4150
+F 0 "#PWR012" H 4000 3900 50  0001 C CNN
+F 1 "GND" H 4005 3977 50  0000 C CNN
+F 2 "" H 4000 4150 50  0001 C CNN
+F 3 "" H 4000 4150 50  0001 C CNN
+	1    4000 4150
+	1    0    0    -1  
+$EndComp
+$Comp
+L Device:R R32
+U 1 1 6183B85B
+P 4000 3400
+F 0 "R32" H 3930 3354 50  0000 R CNN
+F 1 "50" H 3930 3445 50  0000 R CNN
+F 2 "Resistor_THT:R_Axial_DIN0204_L3.6mm_D1.6mm_P7.62mm_Horizontal" V 3930 3400 50  0001 C CNN
+F 3 "~" H 4000 3400 50  0001 C CNN
+	1    4000 3400
+	-1   0    0    1   
+$EndComp
+$Comp
+L Device:R R33
+U 1 1 6183B861
+P 4000 3850
+F 0 "R33" H 3930 3804 50  0000 R CNN
+F 1 "220" H 3930 3895 50  0000 R CNN
+F 2 "Resistor_THT:R_Axial_DIN0204_L3.6mm_D1.6mm_P7.62mm_Horizontal" V 3930 3850 50  0001 C CNN
+F 3 "~" H 4000 3850 50  0001 C CNN
+	1    4000 3850
+	-1   0    0    1   
+$EndComp
+Wire Wire Line
+	4000 3550 4000 3650
+Wire Wire Line
+	4000 4000 4000 4150
+Wire Wire Line
+	4600 3650 4000 3650
+Connection ~ 4000 3650
+Wire Wire Line
+	4000 3650 4000 3700
+Text GLabel 3100 2500 2    39   Input ~ 0
+black
+Text GLabel 3400 1250 2    39   Input ~ 0
+blue
+Text GLabel 4300 4650 0    39   Input ~ 0
+white
+Text GLabel 2650 5400 0    39   Input ~ 0
+red
+$EndSCHEMATC

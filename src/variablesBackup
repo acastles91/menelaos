@@ -1,0 +1,117 @@
+#pragma once
+
+#include <Arduino.h>
+#include <iostream>
+#include "bcd.h"
+#include <ESP32Encoder.h>
+#define USE_SERIAL Serial
+#include "EEPROM.h"
+#include <stdio.h>
+#include "freertos/FreeRTOS.h"
+#include "freertos/task.h"
+#include "esp_system.h"
+#include "nvs_flash.h"
+#include "nvs.h"
+#include "driver/gpio.h"
+#include "avdweb_Switch/avdweb_Switch.h"
+#include "Bounce2.h"
+#include "pinout.h"
+#include "functions.h"
+
+
+
+Value testValue;
+Value savedValue;
+
+//Switch
+
+//Switch  pushButton = Switch(34);
+//Switch pushButtonVCC = Switch(button, INPUT, HIGH); // button to VCC, 10k pull-down resistor, no internal pull-up resistor, HIGH polarity
+
+//Bounce2
+
+Bounce  bounceZero = Bounce();
+Bounce  bounceConfig = Bounce();
+Bounce  bounceMode = Bounce();
+
+
+//PWM
+
+const int frequency = 5000;
+const int pwmChannel = 1;
+const int resolution = 8;
+
+ESP32Encoder  rotary;
+unsigned long rotaryLastToggled;
+bool rotaryPaused = false;
+bool rotaryCheck = false;
+int64_t rotaryPrev;
+bool rotaryEnabled = false;
+bool ledState = LOW;
+
+bool dpState = LOW;
+
+
+
+// NVS
+
+int32_t lastValue = 0;
+nvs_handle_t my_handle;
+esp_err_t err;
+
+
+int storedValue = 0;
+int readValue = 0;
+volatile bool saveFlag = false;
+volatile bool resetFlag = false;
+
+
+
+
+//#define STORAGE_NAMESPACE "storage"
+
+// #if CONFIG_IDF_TARGET_ESP32C3
+// #define BOOT_MODE_PIN GPIO_NUM_9
+// #else
+// #define BOOT_MODE_PIN GPIO_NUM_0
+// #endif //CONFIG_IDF_TARGET_ESP32C3
+
+
+std::vector<int> addresses;
+std::vector<std::tuple<int, int, int, int>> numbers;
+enum Counter {ones, tens, hundreds, thousands};
+std::vector<std::bitset<4>> displayedValue;
+int testCounter;
+
+volatile bool writingFlag = false;
+volatile bool indexTuple = 0;
+volatile int counter = 0;
+volatile bool oeBool = false;
+volatile int longCounter = 0;
+volatile int unitIter = 0;
+volatile Counter display = Counter::ones;
+volatile bool counterChangeFlag = false;
+volatile bool addFlag = false;
+volatile bool changeMode;
+
+int a1Value = 0;
+int a2Value = 0;
+int a3Value = 0;
+int a4Value = 0;
+
+std::tuple<int, int, int, int>  one = std::make_tuple(0,0,0,1);
+std::tuple<int, int, int, int>  two = std::make_tuple(0,0,1,0);
+std::tuple<int, int, int, int>  three = std::make_tuple(0,0,1,1);
+std::tuple<int, int, int, int>  four = std::make_tuple(0,1,0,0);
+std::tuple<int, int, int, int>  five = std::make_tuple(0,1,0,1);
+std::tuple<int, int, int, int>  six = std::make_tuple(0,1,1,0);
+std::tuple<int, int, int, int>  seven = std::make_tuple(0,1,1,1);
+std::tuple<int, int, int, int>  eight = std::make_tuple(1,0,0,0);
+std::tuple<int, int, int, int>  nine = std::make_tuple(1,0,0,1);
+std::tuple<int, int, int, int>  zero = std::make_tuple(0,0,0,0);
+
+hw_timer_t * timer = NULL;
+hw_timer_t * timer2 = NULL;
+
+portMUX_TYPE timerMux = portMUX_INITIALIZER_UNLOCKED;
+volatile bool johnsonToggle = false;

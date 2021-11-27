@@ -14,6 +14,12 @@ Comment3 ""
 Comment4 ""
 $EndDescr
 $Sheet
+S 1000 5500 3250 1750
+U 61C194CB
+F0 "7-segmet-display" 50
+F1 "7-segment-display.sch" 50
+$EndSheet
+$Sheet
 S 1000 1150 3150 1750
 U 61C22CBA
 F0 "power" 50
@@ -666,10 +672,4 @@ $EndComp
 Wire Wire Line
 	13750 4600 13750 5050
 Connection ~ 13750 4600
-$Sheet
-S 1000 5500 3250 1750
-U 61C194CB
-F0 "7-segmet-display" 50
-F1 "7-segment-display-v2.sch" 50
-$EndSheet
 $EndSCHEMATC

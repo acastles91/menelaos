@@ -3,7 +3,7 @@ EELAYER 30 0
 EELAYER END
 $Descr A4 11693 8268
 encoding utf-8
-Sheet 3 5
+Sheet 4 5
 Title ""
 Date ""
 Rev ""
@@ -64,8 +64,6 @@ F 3 "" H 7850 2100 50  0001 C CNN
 $EndComp
 Wire Wire Line
 	7850 1750 7850 2100
-Wire Wire Line
-	8500 1850 8500 2100
 $Comp
 L power:GND #PWR?
 U 1 1 606DF5BD
@@ -82,20 +80,6 @@ F 3 "" H 9000 2100 50  0001 C CNN
 $EndComp
 Wire Wire Line
 	9000 2100 9000 1750
-$Comp
-L ariadne-rescue:OKI-78SR-5v-OpenSourceCelluloid-upuaut-rescue U?
-U 1 1 606DF5CA
-P 8500 1500
-AR Path="/5FBCFD95/606DF5CA" Ref="U?"  Part="1" 
-AR Path="/606DF5CA" Ref="U?"  Part="1" 
-AR Path="/61C22CBA/606DF5CA" Ref="U17"  Part="1" 
-F 0 "U17" H 8500 1815 50  0000 C CNN
-F 1 "OKI-78SR-5v" H 8500 1724 50  0000 C CNN
-F 2 "Converter_DCDC:Converter_DCDC_muRata_OKI-78SR_Vertical" H 8500 1450 50  0001 C CNN
-F 3 "" H 8500 1400 50  0001 C CNN
-	1    8500 1500
-	1    0    0    -1  
-$EndComp
 Wire Wire Line
 	8800 1450 9000 1450
 $Comp
@@ -235,10 +219,6 @@ Wire Wire Line
 	1550 3050 1500 3050
 Wire Wire Line
 	2200 3750 2200 4000
-Text GLabel 1800 1650 3    50   Input ~ 0
-POWER-IN+
-Text GLabel 1600 1650 3    50   Input ~ 0
-POWER-IN-
 Connection ~ 1500 3650
 Wire Wire Line
 	1500 3650 1500 3050
@@ -252,11 +232,8 @@ Wire Notes Line
 Wire Notes Line
 	3550 900  700  900 
 Wire Wire Line
-	1800 1650 1900 1650
-Wire Wire Line
 	1500 1650 1500 3050
 Connection ~ 1500 3050
-NoConn ~ 1700 1150
 Wire Notes Line
 	700  4500 3550 4500
 Wire Wire Line
@@ -265,8 +242,6 @@ Text Notes 3750 1850 0    50   ~ 0
 P-Channel Mosfet\nIn narcise the mosfet used was IRF9540
 Wire Wire Line
 	2200 2500 1900 2500
-Wire Wire Line
-	1900 1650 1900 2500
 Text Notes 6700 3350 0    50   ~ 0
 5V voltage logic\n\n\n
 $Comp
@@ -316,8 +291,6 @@ F 3 "" H 7850 4400 50  0001 C CNN
 $EndComp
 Wire Wire Line
 	7850 4050 7850 4400
-Wire Wire Line
-	8500 4150 8500 4400
 $Comp
 L power:GND #PWR?
 U 1 1 61C3251D
@@ -334,20 +307,6 @@ F 3 "" H 9000 4400 50  0001 C CNN
 $EndComp
 Wire Wire Line
 	9000 4400 9000 4050
-$Comp
-L ariadne-rescue:OKI-78SR-5v-OpenSourceCelluloid-upuaut-rescue U?
-U 1 1 61C3252A
-P 8500 3800
-AR Path="/5FBCFD95/61C3252A" Ref="U?"  Part="1" 
-AR Path="/61C3252A" Ref="U?"  Part="1" 
-AR Path="/61C22CBA/61C3252A" Ref="U18"  Part="1" 
-F 0 "U18" H 8500 4115 50  0000 C CNN
-F 1 "OKI-78SR-5v" H 8500 4024 50  0000 C CNN
-F 2 "Converter_DCDC:Converter_DCDC_muRata_OKI-78SR_Vertical" H 8500 3750 50  0001 C CNN
-F 3 "" H 8500 3700 50  0001 C CNN
-	1    8500 3800
-	1    0    0    -1  
-$EndComp
 Wire Wire Line
 	8800 3750 9000 3750
 $Comp
@@ -382,10 +341,10 @@ F 3 "~" H 10550 3750 50  0001 C CNN
 	0    1    1    0   
 $EndComp
 $Comp
-L power:+5VP #PWR0131
+L power:+5VP #PWR022
 U 1 1 61C42E20
 P 9200 1450
-F 0 "#PWR0131" H 9200 1300 50  0001 C CNN
+F 0 "#PWR022" H 9200 1300 50  0001 C CNN
 F 1 "+5VP" H 9215 1623 50  0000 C CNN
 F 2 "" H 9200 1450 50  0001 C CNN
 F 3 "" H 9200 1450 50  0001 C CNN
@@ -394,10 +353,10 @@ F 3 "" H 9200 1450 50  0001 C CNN
 $EndComp
 Connection ~ 9200 1450
 $Comp
-L power:+12V #PWR0132
+L power:+12V #PWR013
 U 1 1 61C44E96
 P 2200 4000
-F 0 "#PWR0132" H 2200 3850 50  0001 C CNN
+F 0 "#PWR013" H 2200 3850 50  0001 C CNN
 F 1 "+12V" H 2215 4173 50  0000 C CNN
 F 2 "" H 2200 4000 50  0001 C CNN
 F 3 "" H 2200 4000 50  0001 C CNN
@@ -405,10 +364,10 @@ F 3 "" H 2200 4000 50  0001 C CNN
 	-1   0    0    1   
 $EndComp
 $Comp
-L power:+12V #PWR0133
+L power:+12V #PWR016
 U 1 1 61C467E1
 P 6850 3750
-F 0 "#PWR0133" H 6850 3600 50  0001 C CNN
+F 0 "#PWR016" H 6850 3600 50  0001 C CNN
 F 1 "+12V" H 6865 3923 50  0000 C CNN
 F 2 "" H 6850 3750 50  0001 C CNN
 F 3 "" H 6850 3750 50  0001 C CNN
@@ -416,32 +375,16 @@ F 3 "" H 6850 3750 50  0001 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L power:+12V #PWR0134
+L power:+12V #PWR017
 U 1 1 61C478BB
 P 7550 1450
-F 0 "#PWR0134" H 7550 1300 50  0001 C CNN
+F 0 "#PWR017" H 7550 1300 50  0001 C CNN
 F 1 "+12V" H 7565 1623 50  0000 C CNN
 F 2 "" H 7550 1450 50  0001 C CNN
 F 3 "" H 7550 1450 50  0001 C CNN
 	1    7550 1450
 	1    0    0    -1  
 $EndComp
-$Comp
-L Device:R_POT_TRIM RV9
-U 1 1 61C4B0ED
-P 7200 3900
-F 0 "RV9" H 7130 3946 50  0000 R CNN
-F 1 "R_POT_TRIM" H 7130 3855 50  0000 R CNN
-F 2 "Potentiometer_THT:Potentiometer_Bourns_3296W_Vertical" H 7200 3900 50  0001 C CNN
-F 3 "~" H 7200 3900 50  0001 C CNN
-	1    7200 3900
-	-1   0    0    -1  
-$EndComp
-Wire Wire Line
-	6850 3750 7200 3750
-Connection ~ 7200 3750
-Wire Wire Line
-	7200 3750 7850 3750
 $Comp
 L power:GND #PWR?
 U 1 1 61C4C3A9
@@ -456,13 +399,11 @@ F 3 "" H 7200 4450 50  0001 C CNN
 	1    7200 4450
 	1    0    0    -1  
 $EndComp
-Wire Wire Line
-	7200 4050 7200 4450
 $Comp
-L Comparator:LM393 U16
+L Comparator:LM393 U1
 U 1 1 61C4D672
 P 7600 5300
-F 0 "U16" H 7600 5667 50  0000 C CNN
+F 0 "U1" H 7600 5667 50  0000 C CNN
 F 1 "LM393" H 7600 5576 50  0000 C CNN
 F 2 "Package_DIP:DIP-8_W7.62mm_Socket_LongPads" H 7600 5300 50  0001 C CNN
 F 3 "http://www.ti.com/lit/ds/symlink/lm393.pdf" H 7600 5300 50  0001 C CNN
@@ -470,10 +411,10 @@ F 3 "http://www.ti.com/lit/ds/symlink/lm393.pdf" H 7600 5300 50  0001 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L Comparator:LM393 U16
+L Comparator:LM393 U1
 U 2 1 61C4E304
 P 9750 5300
-F 0 "U16" H 9750 5667 50  0000 C CNN
+F 0 "U1" H 9750 5667 50  0000 C CNN
 F 1 "LM393" H 9750 5576 50  0000 C CNN
 F 2 "Package_DIP:DIP-8_W7.62mm_Socket_LongPads" H 9750 5300 50  0001 C CNN
 F 3 "http://www.ti.com/lit/ds/symlink/lm393.pdf" H 9750 5300 50  0001 C CNN
@@ -481,10 +422,10 @@ F 3 "http://www.ti.com/lit/ds/symlink/lm393.pdf" H 9750 5300 50  0001 C CNN
 	-1   0    0    -1  
 $EndComp
 $Comp
-L Comparator:LM393 U16
+L Comparator:LM393 U1
 U 3 1 61C4E7D6
 P 8850 5400
-F 0 "U16" H 8808 5446 50  0000 L CNN
+F 0 "U1" H 8808 5446 50  0000 L CNN
 F 1 "LM393" H 8808 5355 50  0000 L CNN
 F 2 "Package_DIP:DIP-8_W7.62mm_Socket_LongPads" H 8850 5400 50  0001 C CNN
 F 3 "http://www.ti.com/lit/ds/symlink/lm393.pdf" H 8850 5400 50  0001 C CNN
@@ -494,34 +435,20 @@ $EndComp
 NoConn ~ 7900 5300
 NoConn ~ 7300 5200
 NoConn ~ 7300 5400
-$Comp
-L Device:R_POT_TRIM RV10
-U 1 1 61C532DA
-P 9900 3900
-F 0 "RV10" H 9830 3946 50  0000 R CNN
-F 1 "R_POT_TRIM" H 9830 3855 50  0000 R CNN
-F 2 "Potentiometer_THT:Potentiometer_Bourns_3296W_Vertical" H 9900 3900 50  0001 C CNN
-F 3 "~" H 9900 3900 50  0001 C CNN
-	1    9900 3900
-	1    0    0    -1  
-$EndComp
 Wire Wire Line
 	9000 3750 9150 3750
 Connection ~ 9150 3750
 $Comp
-L power:+5VL #PWR0136
+L power:+5VL #PWR018
 U 1 1 61C43369
 P 9150 3750
-F 0 "#PWR0136" H 9150 3600 50  0001 C CNN
+F 0 "#PWR018" H 9150 3600 50  0001 C CNN
 F 1 "+5VL" H 9165 3923 50  0000 C CNN
 F 2 "" H 9150 3750 50  0001 C CNN
 F 3 "" H 9150 3750 50  0001 C CNN
 	1    9150 3750
 	1    0    0    -1  
 $EndComp
-Wire Wire Line
-	9150 3750 9900 3750
-Connection ~ 9900 3750
 $Comp
 L power:GND #PWR?
 U 1 1 61C57633
@@ -537,22 +464,14 @@ F 3 "" H 9900 4450 50  0001 C CNN
 	1    0    0    -1  
 $EndComp
 Wire Wire Line
-	9900 4450 9900 4050
-Wire Wire Line
-	9900 3750 10300 3750
-Wire Wire Line
-	10050 3900 10050 5200
-Wire Wire Line
-	7050 3900 7050 5850
-Wire Wire Line
 	7050 5850 10050 5850
 Wire Wire Line
 	10050 5850 10050 5400
 $Comp
-L power:+5VL #PWR0138
+L power:+5VL #PWR020
 U 1 1 61C608C6
 P 9150 5300
-F 0 "#PWR0138" H 9150 5150 50  0001 C CNN
+F 0 "#PWR020" H 9150 5150 50  0001 C CNN
 F 1 "+5VL" H 9165 5473 50  0000 C CNN
 F 2 "" H 9150 5300 50  0001 C CNN
 F 3 "" H 9150 5300 50  0001 C CNN
@@ -582,10 +501,10 @@ Wire Notes Line
 Wire Notes Line
 	10750 3300 10750 6150
 $Comp
-L Device:CP1 C1
+L Device:CP1 C2
 U 1 1 61C682ED
 P 10300 3900
-F 0 "C1" H 10415 3946 50  0000 L CNN
+F 0 "C2" H 10415 3946 50  0000 L CNN
 F 1 "CP1" H 10415 3855 50  0000 L CNN
 F 2 "Capacitor_THT:CP_Radial_D13.0mm_P5.00mm" H 10300 3900 50  0001 C CNN
 F 3 "~" H 10300 3900 50  0001 C CNN
@@ -614,10 +533,10 @@ Wire Wire Line
 Wire Wire Line
 	2200 2500 2200 2850
 $Comp
-L Device:R R10
+L Device:R R21
 U 1 1 61D6039A
 P 9450 5150
-F 0 "R10" H 9520 5196 50  0000 L CNN
+F 0 "R21" H 9520 5196 50  0000 L CNN
 F 1 "R" H 9520 5105 50  0000 L CNN
 F 2 "Resistor_THT:R_Axial_DIN0204_L3.6mm_D1.6mm_P7.62mm_Horizontal" V 9380 5150 50  0001 C CNN
 F 3 "~" H 9450 5150 50  0001 C CNN
@@ -625,10 +544,10 @@ F 3 "~" H 9450 5150 50  0001 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L power:+5VL #PWR0141
+L power:+5VL #PWR023
 U 1 1 61D60683
 P 9450 5000
-F 0 "#PWR0141" H 9450 4850 50  0001 C CNN
+F 0 "#PWR023" H 9450 4850 50  0001 C CNN
 F 1 "+5VL" H 9465 5173 50  0000 C CNN
 F 2 "" H 9450 5000 50  0001 C CNN
 F 3 "" H 9450 5000 50  0001 C CNN
@@ -652,43 +571,133 @@ F 3 "" H 1700 1200 50  0001 C CNN
 	1    0    0    -1  
 $EndComp
 Wire Wire Line
-	1900 1650 1900 1400
-Wire Wire Line
 	1900 1400 1950 1400
-Connection ~ 1900 1650
 Wire Wire Line
 	1450 1650 1450 1400
 Wire Wire Line
 	1450 1650 1500 1650
-Connection ~ 1500 1650
-Wire Wire Line
-	1500 1650 1600 1650
 $Comp
-L Device:C C9
-U 1 1 61857108
-P 9100 5450
-F 0 "C9" H 9215 5496 50  0000 L CNN
-F 1 "C" H 9215 5405 50  0000 L CNN
-F 2 "Capacitor_THT:C_Disc_D4.3mm_W1.9mm_P5.00mm" H 9138 5300 50  0001 C CNN
-F 3 "~" H 9100 5450 50  0001 C CNN
-	1    9100 5450
+L Regulator_Linear:L7805 U3
+U 1 1 618A189B
+P 8500 3750
+F 0 "U3" H 8500 3992 50  0000 C CNN
+F 1 "L7805" H 8500 3901 50  0000 C CNN
+F 2 "Package_TO_SOT_THT:TO-220-3_Horizontal_TabDown" H 8525 3600 50  0001 L CIN
+F 3 "http://www.st.com/content/ccc/resource/technical/document/datasheet/41/4f/b3/b0/12/d4/47/88/CD00000444.pdf/files/CD00000444.pdf/jcr:content/translations/en.CD00000444.pdf" H 8500 3700 50  0001 C CNN
+	1    8500 3750
 	1    0    0    -1  
 $EndComp
+Text Notes 6750 2750 0    50   ~ 0
+Changed muratas for L7805CV because of availability\n
+Wire Wire Line
+	8500 4050 8500 4400
+$Comp
+L Regulator_Linear:L7805 U2
+U 1 1 618A7AAE
+P 8500 1450
+F 0 "U2" H 8500 1692 50  0000 C CNN
+F 1 "L7805" H 8500 1601 50  0000 C CNN
+F 2 "Package_TO_SOT_THT:TO-220-3_Horizontal_TabDown" H 8525 1300 50  0001 L CIN
+F 3 "http://www.st.com/content/ccc/resource/technical/document/datasheet/41/4f/b3/b0/12/d4/47/88/CD00000444.pdf/files/CD00000444.pdf/jcr:content/translations/en.CD00000444.pdf" H 8500 1400 50  0001 C CNN
+	1    8500 1450
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	8500 1750 8500 2100
+Wire Wire Line
+	1900 1400 1900 2500
+$Comp
+L Device:R R20
+U 1 1 6197C7D6
+P 7200 4200
+F 0 "R20" H 7270 4246 50  0000 L CNN
+F 1 "R" H 7270 4155 50  0000 L CNN
+F 2 "Resistor_THT:R_Axial_DIN0204_L3.6mm_D1.6mm_P7.62mm_Horizontal" V 7130 4200 50  0001 C CNN
+F 3 "~" H 7200 4200 50  0001 C CNN
+	1    7200 4200
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	6850 3750 7200 3750
+Wire Wire Line
+	9150 3750 9900 3750
+$Comp
+L Device:R R10
+U 1 1 6197D317
+P 7200 3900
+F 0 "R10" H 7270 3946 50  0000 L CNN
+F 1 "R" H 7270 3855 50  0000 L CNN
+F 2 "Resistor_THT:R_Axial_DIN0204_L3.6mm_D1.6mm_P7.62mm_Horizontal" V 7130 3900 50  0001 C CNN
+F 3 "~" H 7200 3900 50  0001 C CNN
+	1    7200 3900
+	1    0    0    -1  
+$EndComp
+Connection ~ 7200 3750
+Wire Wire Line
+	7200 3750 7850 3750
+Wire Wire Line
+	7200 4350 7200 4450
+Wire Wire Line
+	7200 4050 7050 4050
+Connection ~ 7200 4050
+Wire Wire Line
+	7050 4050 7050 5850
+$Comp
+L Device:R R22
+U 1 1 61980E51
+P 9900 3900
+F 0 "R22" H 9970 3946 50  0000 L CNN
+F 1 "R" H 9970 3855 50  0000 L CNN
+F 2 "Resistor_THT:R_Axial_DIN0204_L3.6mm_D1.6mm_P7.62mm_Horizontal" V 9830 3900 50  0001 C CNN
+F 3 "~" H 9900 3900 50  0001 C CNN
+	1    9900 3900
+	1    0    0    -1  
+$EndComp
+Connection ~ 9900 3750
+Wire Wire Line
+	9900 3750 10300 3750
+$Comp
+L Device:R R23
+U 1 1 61981393
+P 9900 4200
+F 0 "R23" H 9970 4246 50  0000 L CNN
+F 1 "R" H 9970 4155 50  0000 L CNN
+F 2 "Resistor_THT:R_Axial_DIN0204_L3.6mm_D1.6mm_P7.62mm_Horizontal" V 9830 4200 50  0001 C CNN
+F 3 "~" H 9900 4200 50  0001 C CNN
+	1    9900 4200
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	9900 4350 9900 4450
+Wire Wire Line
+	9900 4050 10050 4050
+Connection ~ 9900 4050
+Wire Wire Line
+	10050 4050 10050 5200
+$Comp
+L Device:C C1
+U 1 1 61857C5A
+P 9150 5450
+F 0 "C1" H 9265 5496 50  0000 L CNN
+F 1 "C" H 9265 5405 50  0000 L CNN
+F 2 "Capacitor_THT:C_Disc_D4.3mm_W1.9mm_P5.00mm" H 9188 5300 50  0001 C CNN
+F 3 "~" H 9150 5450 50  0001 C CNN
+	1    9150 5450
+	1    0    0    -1  
+$EndComp
+Connection ~ 9150 5300
 $Comp
 L power:GND #PWR?
-U 1 1 61857BCA
-P 9100 5600
-AR Path="/5FBCFD95/61857BCA" Ref="#PWR?"  Part="1" 
-AR Path="/61857BCA" Ref="#PWR?"  Part="1" 
-AR Path="/61C22CBA/61857BCA" Ref="#PWR030"  Part="1" 
-F 0 "#PWR030" H 9100 5350 50  0001 C CNN
-F 1 "GND" H 9105 5427 50  0000 C CNN
-F 2 "" H 9100 5600 50  0001 C CNN
-F 3 "" H 9100 5600 50  0001 C CNN
-	1    9100 5600
+U 1 1 6185A385
+P 9150 5600
+AR Path="/5FBCFD95/6185A385" Ref="#PWR?"  Part="1" 
+AR Path="/6185A385" Ref="#PWR?"  Part="1" 
+AR Path="/61C22CBA/6185A385" Ref="#PWR021"  Part="1" 
+F 0 "#PWR021" H 9150 5350 50  0001 C CNN
+F 1 "GND" H 9155 5427 50  0000 C CNN
+F 2 "" H 9150 5600 50  0001 C CNN
+F 3 "" H 9150 5600 50  0001 C CNN
+	1    9150 5600
 	1    0    0    -1  
 $EndComp
-Wire Wire Line
-	9150 5300 9100 5300
-Connection ~ 9150 5300
 $EndSCHEMATC

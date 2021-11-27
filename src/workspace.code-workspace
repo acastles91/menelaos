@@ -3,9 +3,6 @@
 		{
 			"name": "menelaos",
 			"path": ".."
-		},
-		{
-			"path": "../../github/esp-idf"
 		}
 	],
 	"settings": {

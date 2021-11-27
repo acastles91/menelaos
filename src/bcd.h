@@ -1,3 +1,5 @@
+#pragma once
+
 #include <tuple>
 #include <vector>
 #include <bitset>
@@ -11,6 +13,7 @@
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
 #include "esp_system.h"
+#include "mode.h"
 //#include "nvs_flash.h"
 //#include "nvs.h"
 
@@ -24,7 +27,6 @@ public:
     Value();
 
     Value(int32_t& lastValueArg);
-
 
     std::tuple<int, int, int, int>  one = std::make_tuple(0,0,0,1);
     std::tuple<int, int, int, int>  two = std::make_tuple(0,0,1,0);
@@ -41,12 +43,18 @@ public:
 
     enum Counter {ones, tens, hundreds, thousands};
 
-    int32_t numberValue;
     int32_t addedNumber;
-    std::vector<std::bitset<4>> valueVector;
+    int32_t numberToSet;
+    int32_t remainingValue;
+    int32_t takenValue;
+    int32_t originalLength;
+    int32_t startValue;
+    int32_t lastSavedRoll;
+
+    std::vector<std::bitset<4>> remainingValueVector;
+    std::vector<std::bitset<4>> takenValueVector;
+
     
-
-
     Counter counter; 
 
     std::vector<std::bitset<4>> dec_to_bin(int n);
@@ -55,17 +63,16 @@ public:
 
     void setNumber(int32_t& numberArg);
     void addNumber(int32_t sum);
-    void updateValueVector();
+    void updateRemainingValueVector();
     void saveValue();
+    void readValue();    
+    int32_t getRemainingValue();
+    void updateValues(int32_t n);
+    void resetTakenValue();
+    void changePaper(int32_t newRoll);
 
-    void readValue();
 
-
-
-
-    
-    int getNumberValue();
-
+private:
 
 
 };
