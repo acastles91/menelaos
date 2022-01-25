@@ -39,6 +39,7 @@
 //#define SETUP_WRITE_FLAGS
 //#define SETUP_BLINK
 #define SET_MODE
+#define SETUP_WAKEUP
 
 //#define SETUP_TEST_COUNTER
 
@@ -57,6 +58,7 @@ void setup() {
   gpio_pullup_en(GPIO_NUM_15);
 
   #endif
+
 
   #ifdef  SETUP_PINMODE
   // //PinMode
@@ -114,8 +116,13 @@ void setup() {
   attachInterrupt(tensPin, write_ones, RISING);
   attachInterrupt(hundredsPin, write_thousands, RISING);
   attachInterrupt(savePin, shutDown, RISING); 
-  esp_sleep_enable_ext0_wakeup(GPIO_NUM_15, LOW);
+  //esp_sleep_enable_ext0_wakeup(GPIO_NUM_15, LOW);
+  
+  #endif
 
+  #ifdef SETUP_WAKEUP
+
+  esp_sleep_enable_ext0_wakeup(GPIO_NUM_15, LOW);
 
   #endif
 
@@ -245,8 +252,6 @@ void setup() {
 }
 
 void loop() {
-
-
   //This restarts the watchdog timer
 esp_task_wdt_reset();
 
@@ -429,8 +434,8 @@ switch(mode){
 
 
     if (shutDownFlag){
-      //detachInterrupt(savePin);
-      //rtc_wdt_feed();
+      detachInterrupt(savePin);
+      rtc_wdt_feed();
       //vTaskDelay(pdMS_TO_TICKS(100));
       detachInterrupt(GPIO_NUM_15);
       detachInterrupt(GPIO_NUM_4);
@@ -447,6 +452,7 @@ switch(mode){
       digitalWrite(builtinLed,ledState); // WRITE THE NEW ledState
       displayedValue = dec_to_bin(8888);
       esp_deep_sleep_start();
+      //esp_restart();
     }
 
     #endif
@@ -507,78 +513,3 @@ switch(mode){
 }
 //}
 #endif
-
-
-
-//   //Flags
-
-  
-//   //   //Serial.println("Save flag triggered");
-//   //   // EEPROM.write(0, testValue.remainingValue);
-//   //   // EEPROM.commit();
-
-  // if (saveFlag){
-
-  //   //ESP.deepSleep(0);
-
-  // }
-
-//   //Serial.println("number value: " + String(value.remainingValue));
-  
-
-//   //     //timerAlarmDisable(timer2);		// stop alarm
-//   // //timerAlarmDisable(timer);
-//   // //timerDetachInterrupt(timer2);
-//   // //timerDetachInterrupt(timer);
-//   //   timerEnd(timer2);
-//   //   timerEnd(timer);
-//   //   saveLastValue();
-//   //   saveFlag = false;
-
-
-//   //   //if(rotaryEnabled){
-      
-//   //     // timerAlarmDisable(timer2);		// stop alarm
-//   //     // timerAlarmDisable(timer);
-//   //     // timerDetachInterrupt(timer2);
-//   //     // timerDetachInterrupt(timer);
-//   //     // timerEnd(timer2);
-//   //     // timerEnd(timer);
-
-//   //     //rotaryEnabled = false;
-//   //     //rotary.pauseCount();
-//   //     //Serial.println("Rotary disabled");
-
-//   //     //}
-
-//   //   // else{
-
-//   //   //   timer2 = timerBegin(1, 80, true);
-//   //   //   timerAttachInterrupt(timer2, &checkRotary, true);
-//   //   //   timerAlarmWrite(timer2, 5000, true);
-//   //   //   timerAlarmEnable(timer2);
-//   //   //   rotaryEnabled = true;
-//   //   //   rotary.resumeCount();
-//   //   //   Serial.println("Rotary enabled");
-
-//   //   // }
-//   //   // timerAttachInterrupt(timer2, &checkRotary, true);
-//   //   // timerAlarmWrite(timer2, 5000, true);
-//   //   // timerAlarmEnable(timer2);
-
-//   // }
-
-//   //Test counter
-  
-//   // if (addFlag){
-      
-//   //     Serial.println(testValue.remainingValue);
-//   //     testValue.addNumber(1);
-//   //     Serial.println(testValue.remainingValue);
-//   //     Serial.println(testValue.addedNumber);
-//   //     Serial.println(testValue.getremainingValue());
-//   //     addFlag = false;
-//   // }
-
-// 
-  //Serial.println("Encoder count = " + String((int32_t)rotary.getCount()));
