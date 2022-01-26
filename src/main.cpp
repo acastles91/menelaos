@@ -23,7 +23,7 @@
 #include <esp_task_wdt.h>
 #include "soc/rtc_wdt.h"
 
-#define WDT_TIMEOUT   3
+#define WDT_TIMEOUT   2
 #define FREQ          5000
 #define BASIC_SETUP
 #define SETUP_PINMODE
@@ -31,17 +31,13 @@
 #define SETUP_INTERRUPTS
 #define SETUP_TIMERS
 #define SETUP_DISPLAY_PWM
-//#define SETUP_DISPLAY_INTERRUPT
 #define SETUP_WRITE_OUTPUTS
 #define SETUP_ENCODER
 #define SETUP_MODE
 #define SETUP_DEBOUNCERS
-//#define SETUP_WRITE_FLAGS
-//#define SETUP_BLINK
 #define SET_MODE
+#define IDLE_MODE
 #define SETUP_WAKEUP
-
-//#define SETUP_TEST_COUNTER
 
 
 void setup() {
@@ -55,13 +51,15 @@ void setup() {
   WiFi.mode(WIFI_MODE_NULL);
   btStop();
   displayedValue = dec_to_bin(8888);
-  gpio_pullup_en(GPIO_NUM_15);
+  //gpio_pullup_en(GPIO_NUM_15);
 
   #endif
 
 
   #ifdef  SETUP_PINMODE
   // //PinMode
+  //Save attempt
+  pinMode(savePin, INPUT_PULLDOWN);
   pinMode(chA, INPUT_PULLDOWN);
   pinMode(chB, INPUT_PULLDOWN);
   pinMode(a1, OUTPUT);
@@ -84,7 +82,7 @@ void setup() {
   
   //NVS
   #ifdef SETUP_NVS
-
+  esp_task_wdt_reset();
   err = nvs_flash_init();
   if (err == ESP_ERR_NVS_NO_FREE_PAGES || err == ESP_ERR_NVS_NEW_VERSION_FOUND) {
     // NVS partition was truncated and needs to be erased
@@ -95,6 +93,7 @@ void setup() {
   ESP_ERROR_CHECK( err );
   int32_t lastValueArgument = readLastValue();
   value.setNumber(lastValueArgument);
+  esp_task_wdt_reset();
 
   err2 = nvs_flash_init();
   if (err2 == ESP_ERR_NVS_NO_FREE_PAGES || err == ESP_ERR_NVS_NEW_VERSION_FOUND) {
@@ -110,6 +109,7 @@ void setup() {
   
   #ifdef SETUP_INTERRUPTS
   // Interrupts and timers
+  esp_task_wdt_reset();
 
   attachInterrupt(thousandsPin, write_hundreds, RISING);
   attachInterrupt(onesPin, write_tens, RISING); 
@@ -120,11 +120,6 @@ void setup() {
   
   #endif
 
-  #ifdef SETUP_WAKEUP
-
-  esp_sleep_enable_ext0_wakeup(GPIO_NUM_15, LOW);
-
-  #endif
 
   #ifdef SETUP_DISPLAY_INTERRUPT
 
@@ -136,6 +131,7 @@ void setup() {
   #endif
 
   #ifdef SETUP_DISPLAY_PWM
+  esp_task_wdt_reset();
 
   frequency = 4000;
   setupPwm(pwmChannel, frequency, resolution);
@@ -154,6 +150,7 @@ void setup() {
   #ifdef  SETUP_WRITE_OUTPUTS
 
   // Turn off outputs
+  esp_task_wdt_reset();
 
   digitalWrite(a1, LOW);
   digitalWrite(a2, LOW);
@@ -186,6 +183,7 @@ void setup() {
   #ifdef  SETUP_DEBOUNCERS
 
     //Bounces
+  esp_task_wdt_reset();
 
   bounceZero.attach(zeroFunc, INPUT);
   bounceZero.interval(5);
@@ -225,7 +223,8 @@ void setup() {
 
 #ifdef SETUP_MODE
 
-  
+  esp_task_wdt_reset();
+
   mode = (digitalRead(modePin)) ? Mode::Remaining : Mode::Taken;
 
   setModeFlag = false;
@@ -294,6 +293,7 @@ while(mode == Mode::Set){
   if (bounceZero.fell()){
     startTimer = millis();
     while (!digitalRead(zeroFunc) && plusFlag){
+      esp_task_wdt_reset();
       startTimer = millis();
       newPaperLength +=sum;
       if (!fastFlag){
@@ -306,7 +306,6 @@ while(mode == Mode::Set){
         delayTime = 100;
       }
       delayMicroseconds(delayTime);
-      rtc_wdt_feed();
       displayedValue = dec_to_bin(newPaperLength / 10); 
       esp_task_wdt_reset();
       if (bounceZero.currentDuration() > 1000){
@@ -323,8 +322,10 @@ while(mode == Mode::Set){
       if (newPaperLength > 100000){
         newPaperLength = 99999;
         }
+      esp_task_wdt_reset();
       }
     while (!digitalRead(zeroFunc) && !plusFlag){
+      esp_task_wdt_reset();
       startTimer = millis();
       newPaperLength -=sum;
       startTimer = millis();
@@ -338,7 +339,6 @@ while(mode == Mode::Set){
         delayTime = 100;
       }
       delayMicroseconds(delayTime);
-      rtc_wdt_feed();
       displayedValue = dec_to_bin(newPaperLength / 10); 
       esp_task_wdt_reset();
 
@@ -348,7 +348,7 @@ while(mode == Mode::Set){
         }
       else if(fastFlag && bounceZero.currentDuration() > 4000){
         fastFlag = false;
-        veryFastFlag == true;
+        veryFastFlag = true;
       }
       if (newPaperLength < 1 ){
         newPaperLength = 0;
@@ -357,15 +357,16 @@ while(mode == Mode::Set){
     }
     fastFlag = false;
     veryFastFlag = false;
+    esp_task_wdt_reset();
+
     
   if (bounceConfig.changed()){
     startTimer = millis();
     while (!digitalRead(configPin) && setModeFlag) {
-      Serial.println(bounceConfig.currentDuration());
-      Serial.println(digitalRead(configPin));
+      //Serial.println(bounceConfig.currentDuration());
+      //Serial.println(digitalRead(configPin));
       if (bounceConfig.currentDuration() > 1000){
-        rtc_wdt_feed();
-        Serial.println("Aqui");
+        esp_task_wdt_reset();
         plusFlag = digitalRead(modePin);
         oldPaperLength = newPaperLength;
         value.changePaper(newPaperLength);
@@ -377,22 +378,21 @@ while(mode == Mode::Set){
         detachInterrupt(GPIO_NUM_25);
         detachInterrupt(GPIO_NUM_22);
         ledcDetachPin(GPIO_NUM_32);
-
         err2 = nvs_set_i32(paperHandle, "paper_value", newPaperLength);
         err2 = nvs_commit(paperHandle);
         nvs_close(paperHandle);
-        Serial.println("Paper value saved");
+        //Serial.println("Paper value saved");
         
         attachInterrupt(thousandsPin, write_hundreds, RISING);
         attachInterrupt(onesPin, write_tens, RISING); 
         attachInterrupt(tensPin, write_ones, RISING);
         attachInterrupt(hundredsPin, write_thousands, RISING);
         attachInterrupt(savePin, shutDown, RISING); 
-        Serial.println("En el loop");
+        //Serial.println("En el loop");
         setModeFlag = false;
       }
-      Serial.println("Fuera del loop");
     }
+    esp_task_wdt_reset();
   }
 }
 #endif
@@ -408,20 +408,30 @@ switch(mode){
       displayedValue = value.takenValueVector;
     }
     break;
+    case Mode::Idle: {
+      while(true){
+      ledState = !ledState; // SET ledState TO THE OPPOSITE OF ledState
+      digitalWrite(builtinLed,ledState); // WRITE THE NEW ledState
+      //esp_task_wdt_reset();
+      delay(300);
+    }
+    break;
+
+    }
   }
   if(changeMode){
-    Serial.println("Mode changed");
+    //Serial.println("Mode changed");
     changeMode = false;
     switch (mode){
       case Mode::Remaining:{
         mode = Mode::Taken;
-        Serial.println("Mode taken");
+        //Serial.println("Mode taken");
         //value.updateValues((int32_t)rotaryPrev);
       }
       break;
       case Mode::Taken:{
         mode = Mode::Remaining;
-        Serial.println("Mode remaining");
+        //Serial.println("Mode remaining");
         //value.updateValues((int32_t)rotaryPrev * -1);
       }
       break;
@@ -430,10 +440,12 @@ switch(mode){
 
 #endif
 
+
 #ifdef SETUP_NVS
 
 
     if (shutDownFlag){
+      mode = Mode::Idle;
       detachInterrupt(savePin);
       rtc_wdt_feed();
       //vTaskDelay(pdMS_TO_TICKS(100));
@@ -446,12 +458,32 @@ switch(mode){
       shutDownFlag = false;
       rtc_wdt_feed();
       saveLastValue2();
-      ledState = !ledState; // SET ledState TO THE OPPOSITE OF ledState
-      digitalWrite(builtinLed,ledState); // WRITE THE NEW ledState  
-      ledState = !ledState; // SET ledState TO THE OPPOSITE OF ledState
-      digitalWrite(builtinLed,ledState); // WRITE THE NEW ledState
-      displayedValue = dec_to_bin(8888);
+
+
+      #ifdef SETUP_WAKEUP
+
+      esp_sleep_enable_ext0_wakeup(GPIO_NUM_15, LOW);
+
+      #endif
+
+      //attachInterrupt(savePin, esp_restart, CHANGE);
+      // attachInterrupt(thousandsPin, write_hundreds, RISING);
+      // attachInterrupt(onesPin, write_tens, RISING); 
+      // attachInterrupt(tensPin, write_ones, RISING);
+      // attachInterrupt(hundredsPin, write_thousands, RISING);
+      // attachInterrupt(savePin, shutDown, RISING); 
+
+      //ledState = !ledState; // SET ledState TO THE OPPOSITE OF ledState
+      //digitalWrite(builtinLed,ledState); // WRITE THE NEW ledState  
+      //ledState = !ledState; // SET ledState TO THE OPPOSITE OF ledState
+      //digitalWrite(builtinLed,ledState); // WRITE THE NEW ledState
+      //displayedValue = dec_to_bin(8888);
+      
       esp_deep_sleep_start();
+
+      // while(1){
+      //   delay(1000);
+      // }
       //esp_restart();
     }
 

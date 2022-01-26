@@ -4,5 +4,6 @@ enum class Mode {
 
     Remaining,
     Taken,
-    Set
+    Set,
+    Idle
 };

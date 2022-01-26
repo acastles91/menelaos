@@ -656,7 +656,7 @@ void saveLastValue2(){
     // // Close
     nvs_close(my_handle);
 
-    Serial.println("Valued saved from function saveLastValue2");
+    //Serial.println("Valued saved from function saveLastValue2");
 
 
 
