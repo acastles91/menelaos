@@ -13,7 +13,7 @@
 #include "nvs_flash.h"
 #include "nvs.h"
 #include "driver/gpio.h"
-#include "avdweb_Switch/avdweb_Switch.h"
+#include <avdweb_Switch.h>
 #include "Bounce2.h"
 #include "pinout.h"
 #include "mode.h"
@@ -154,7 +154,7 @@ int storedValue = 0;
 int readValue = 0;
 
 //Display
-
+int testDisplay = 9999;
 std::vector<int> addresses;
 std::vector<std::tuple<int, int, int, int>> numbers;
 enum Counter {ones, tens, hundreds, thousands};
@@ -216,3 +216,9 @@ int delayTime;
 int sum;
 
 bool zeroFlag;
+
+
+//LoadCell
+
+float oldValue = 0.0;
+float newValue = 0;

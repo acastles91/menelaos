@@ -353,6 +353,9 @@ void IRAM_ATTR write_ones(){
     digitalWrite(a2, displayedValue[0][1]);
     digitalWrite(a3, displayedValue[0][2]);
     digitalWrite(a4, displayedValue[0][3]);
+
+    //digitalWrite(onesPin, LOW);
+
     
   portEXIT_CRITICAL_ISR(&timerMux);
 
@@ -362,14 +365,17 @@ void IRAM_ATTR write_tens(){
 
   portENTER_CRITICAL_ISR(&timerMux);
 
-    if (mode != Mode::Taken){
-    digitalWrite(dp, HIGH);
-        }
+   // if (mode != Mode::Taken){ Commented out for Salwa
+   // digitalWrite(dp, HIGH);
+   //     }
+    digitalWrite(dp, LOW); //Salwa
+
     digitalWrite(a1, displayedValue[1][0]);
     digitalWrite(a2, displayedValue[1][1]);
     digitalWrite(a3, displayedValue[1][2]);
     digitalWrite(a4, displayedValue[1][3]);
     
+    //digitalWrite(tensPin, LOW);
     portEXIT_CRITICAL_ISR(&timerMux);
 
 }
@@ -377,11 +383,15 @@ void IRAM_ATTR write_tens(){
 void IRAM_ATTR write_hundreds(){
 
   portENTER_CRITICAL_ISR(&timerMux);
-    digitalWrite(dp, LOW);
+    
+    digitalWrite(dp, LOW); //Salwa?
     digitalWrite(a1, displayedValue[2][0]);
     digitalWrite(a2, displayedValue[2][1]);
     digitalWrite(a3, displayedValue[2][2]);
     digitalWrite(a4, displayedValue[2][3]);
+
+
+    //digitalWrite(hundredsPin, LOW); //Salwa
 
   portEXIT_CRITICAL_ISR(&timerMux);
 
@@ -391,11 +401,13 @@ void IRAM_ATTR write_thousands(){
 
   portENTER_CRITICAL_ISR(&timerMux);
 
+    digitalWrite(dp, LOW); //Salwa
     digitalWrite(a1, displayedValue[3][0]);
     digitalWrite(a2, displayedValue[3][1]);
     digitalWrite(a3, displayedValue[3][2]);
     digitalWrite(a4, displayedValue[3][3]);
 
+    //digitalWrite(thousandsPin, LOW); //Salwa
     portEXIT_CRITICAL_ISR(&timerMux);
 
 }

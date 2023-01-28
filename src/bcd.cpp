@@ -17,7 +17,8 @@ Value::Value(){
     takenValue = 0;
     takenValueVector = dec_to_bin(takenValue / 10);
     lastSavedRoll = remainingValue;
-    }
+    
+}
 
 Value::Value(int32_t& lastValueArg){
 
@@ -33,6 +34,20 @@ Value::Value(int32_t& lastValueArg){
     addedNumber = 0;
     }
 
+//Value::Value(int32_t& loadCellValueArg){
+//
+//    //Serial.begin(115200);
+//
+//    //EEPROM.begin(EEPROM_SIZE);
+//
+//    counter = Counter::ones;  
+//    lastLoadCellValue = loadCellValueArg;
+//    //Serial.println("Value constructor called");
+//    //Serial.println("Number Value Constructor= " + String(remainingValue));
+//    loadCellValueVector = dec_to_bin(lastLoadCellValue);
+//    addedNumber = 0;
+//    }
+//
 void Value::readValue(){
 
     // // Open
@@ -299,4 +314,11 @@ void Value::changePaper(int32_t newRoll){
     takenValue = 0;
     //takenValueVector = dec_to_bin(takenValue / 10);
     takenValueVector = dec_to_bin(takenValue);
+}
+
+
+void Value::updateLoadCellValue(double numberArg){
+
+    loadCellValueVector = dec_to_bin(int(numberArg));
+
 }

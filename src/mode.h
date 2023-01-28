@@ -5,5 +5,6 @@ enum class Mode {
     Remaining,
     Taken,
     Set,
-    Idle
+    Idle,
+    LoadCell
 };

@@ -27,7 +27,7 @@ public:
     Value();
 
     Value(int32_t& lastValueArg);
-    //Value(int32_t& loadCellValueArg);
+    Value(int32_t& loadCellValueArg);
 
 
     std::tuple<int, int, int, int>  one = std::make_tuple(0,0,0,1);
@@ -75,13 +75,10 @@ public:
     void updateValues(int32_t n);
     void resetTakenValue();
     void changePaper(int32_t newRoll);
-    void updateLoadCellValue(double numberArg);
 
 
 private:
 
 
 };
-
-
 

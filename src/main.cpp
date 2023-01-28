@@ -1,3 +1,6 @@
+#define ARCH_ESPRESSIF
+#include <HX711.h>
+#include "loadCell.h"
 #include <Arduino.h>
 #include <iostream>
 #include "bcd.h"
@@ -11,7 +14,7 @@
 #include "nvs_flash.h"
 #include "nvs.h"
 #include "driver/gpio.h"
-#include "avdweb_Switch/avdweb_Switch.h"
+#include <avdweb_Switch.h>
 #include "Bounce2.h"
 #include "pinout.h"
 #include "functions.h"
@@ -23,36 +26,39 @@
 #include <esp_task_wdt.h>
 #include "soc/rtc_wdt.h"
 
-#define WDT_TIMEOUT   2
+#define WDT_TIMEOUT   8
 #define FREQ          5000
 #define BASIC_SETUP
 #define SETUP_PINMODE
-#define SETUP_NVS
+//#define SETUP_NVS
 #define SETUP_INTERRUPTS
 #define SETUP_TIMERS
 #define SETUP_DISPLAY_PWM
 #define SETUP_WRITE_OUTPUTS
-#define SETUP_ENCODER
+//#define SETUP_ENCODER  disabled for Salwa
+#define SETUP_LOADCELL
 #define SETUP_MODE
-#define SETUP_DEBOUNCERS
+//#define SETUP_DEBOUNCERS
 #define SET_MODE
 #define IDLE_MODE
 #define SETUP_WAKEUP
 
-
 void setup() {
 
+  Serial.begin(115200);
+    Serial.print("Setup");
   #ifdef  BASIC_SETUP
 
-  Serial.begin(115200);
   esp_task_wdt_init(WDT_TIMEOUT, true);
   esp_task_wdt_add(NULL);
   WRITE_PERI_REG(RTC_CNTL_BROWN_OUT_REG, 0); //disable   detector
   WiFi.mode(WIFI_MODE_NULL);
   btStop();
   displayedValue = dec_to_bin(8888);
+
   //gpio_pullup_en(GPIO_NUM_15);
 
+    Serial.print("Basic Setup");
   #endif
 
 
@@ -60,24 +66,36 @@ void setup() {
   // //PinMode
   //Save attempt
   pinMode(savePin, INPUT_PULLDOWN);
-  pinMode(chA, INPUT_PULLDOWN);
-  pinMode(chB, INPUT_PULLDOWN);
+  //pinMode(chA, INPUT_PULLDOWN);
+  //pinMode(chB, INPUT_PULLDOWN);
+  //pinMode(LOADCELL_CLK, OUTPUT);
+  //pinMode(LOADCELL_DOUT, INPUT);
   pinMode(a1, OUTPUT);
   pinMode(a2, OUTPUT);
   pinMode(a3, OUTPUT);
   pinMode(a4, OUTPUT);
-  pinMode(dp, OUTPUT);
+  //pinMode(dp, OUTPUT);
+
+  pinMode(dp, INPUT_PULLDOWN);
   pinMode(johnson, OUTPUT);
-  pinMode(onesPin, INPUT);
-  pinMode(tensPin, INPUT);
-  pinMode(hundredsPin, INPUT);
-  pinMode(thousandsPin, INPUT);
+  
+pinMode(onesPin, INPUT);
+pinMode(tensPin, INPUT);
+pinMode(hundredsPin, INPUT);
+pinMode(thousandsPin, INPUT);
+
+
+ // pinMode(onesPin, INPUT);
+ // pinMode(tensPin, INPUT);
+ // pinMode(hundredsPin, INPUT);
+ // pinMode(thousandsPin, INPUT);
   pinMode(builtinLed, OUTPUT);
   pinMode(zeroFunc, OUTPUT);
   pinMode(configPin, OUTPUT);
   pinMode(modePin, OUTPUT);
   pinMode(unused, OUTPUT);
 
+    Serial.print("Pinmode");
   #endif
   
   //NVS
@@ -105,19 +123,25 @@ void setup() {
   oldPaperLength = lastPaperValue;
   zeroFlag = false;
   
+    Serial.print("NVS");
   #endif
   
   #ifdef SETUP_INTERRUPTS
   // Interrupts and timers
   esp_task_wdt_reset();
 
-  attachInterrupt(thousandsPin, write_hundreds, RISING);
-  attachInterrupt(onesPin, write_tens, RISING); 
-  attachInterrupt(tensPin, write_ones, RISING);
-  attachInterrupt(hundredsPin, write_thousands, RISING);
-  attachInterrupt(savePin, shutDown, RISING); 
+  //attachInterrupt(onesPin, write_ones, RISING);
+  //attachInterrupt(onesPin, write_ones, RISING); 
+  //attachInterrupt(tensPin, write_ones, RISING);
+  attachInterrupt(hundredsPin, write_hundreds, RISING);
+  attachInterrupt(thousandsPin, write_ones, RISING);
+  attachInterrupt(onesPin, write_thousands, RISING); 
+  attachInterrupt(tensPin, write_tens, RISING);
+  //attachInterrupt(hundredsPin, write_thousands, RISING);
+  //attachInterrupt(savePin, shutDown, RISING); 
   //esp_sleep_enable_ext0_wakeup(GPIO_NUM_15, LOW);
   
+    Serial.print("Interrupts");
   #endif
 
 
@@ -133,18 +157,22 @@ void setup() {
   #ifdef SETUP_DISPLAY_PWM
   esp_task_wdt_reset();
 
-  frequency = 4000;
+  frequency = 2000;
   setupPwm(pwmChannel, frequency, resolution);
 
+    Serial.println("PWM");
   #endif
 
   #ifdef SETUP_TIMERS
+  esp_task_wdt_reset();
+
 
   timer2 = timerBegin(1, 80, true);
   timerAttachInterrupt(timer2, &checkRotary, true);
   timerAlarmWrite(timer2, 10000, true);
   timerAlarmEnable(timer2);
 
+  Serial.println("Timers");
   #endif
 
   #ifdef  SETUP_WRITE_OUTPUTS
@@ -163,6 +191,8 @@ void setup() {
   digitalWrite(modePin, LOW);
   digitalWrite(unused, LOW);
 
+
+    Serial.println("Write outputs");
   #endif
 
   #ifdef SETUP_ENCODER
@@ -225,12 +255,14 @@ void setup() {
 
   esp_task_wdt_reset();
 
-  mode = (digitalRead(modePin)) ? Mode::Remaining : Mode::Taken;
+  // mode = (digitalRead(modePin)) ? Mode::Remaining : Mode::Taken; Disabled for loadCell
+  mode = Mode::LoadCell;
 
   setModeFlag = false;
   fastFlag = false;
   sum = 1;
 
+    Serial.println("Setup Mode");
 #endif
 
 
@@ -247,6 +279,22 @@ void setup() {
   // digitalWrite(unused, LOW);
   //Serial.println(value.getRemainingValue());
   rotaryPrev = 0;
+
+  #ifdef  SETUP_LOADCELL
+    esp_task_wdt_reset();
+    scale.begin(LOADCELL_DOUT, LOADCELL_CLK);
+    esp_task_wdt_reset();
+    scale.set_scale(calibration_factor);                      // this value is obtained by calibrating the scale with known weights; see the README for details
+    scale.tare();
+    digitalWrite(dp, LOW);
+    
+    bounceMode.attach(modePin, INPUT);
+    bounceMode.interval(5);
+
+  
+    Serial.println("Load Cell");
+  #endif
+
 
 }
 
@@ -400,6 +448,53 @@ while(mode == Mode::Set){
 #ifdef SETUP_MODE
 
 switch(mode){
+    case Mode::LoadCell:  {
+
+    esp_task_wdt_reset();
+    
+//    bounceMode.update();
+//    if (bounceMode.changed()){
+//      Serial.println("Beginning");
+//      scale.tare(10);
+//      delay(5000);
+//      Serial.println("End");
+//    }
+//
+//    Serial.println(round(scale.get_units(2)));
+//
+//    if (oldValue == 0.0){
+//       
+//       oldValue = round(scale.get_units(4));
+//       newValue = oldValue;
+//                Serial.println("Aqui");
+//       Serial.println(round(scale.get_units(2)));
+//      // testDisplay -=1;
+//    }
+//
+//    displayedValue = value.loadCellValueVector;
+//    newValue = round(scale.get_units(4));
+//    value.updateLoadCellValue(newValue);
+//
+//    if (oldValue - newValue < 5.0){
+//
+//      oldValue = newValue;
+//
+//     }
+     displayedValue = dec_to_bin(1234);
+
+   // int arrayDecToBin[10] = {0000, 1111, 2222, 3333, 4444, 5555,
+   //                          6666, 7777, 8888, 9999};
+   // for (int i = 0; i < 10; i++){
+   //   
+   //   Serial.println("Aqui ");
+   //   Serial.println(arrayDecToBin[i]);
+   //   displayedValue = dec_to_bin(arrayDecToBin[i]);
+   //   delay(2000);
+   // esp_task_wdt_reset();
+   // }
+
+   }
+      break;
     case Mode::Remaining:  {
       displayedValue = value.remainingValueVector;
       }
@@ -437,6 +532,8 @@ switch(mode){
       break;
     }
   }
+
+}
 
 #endif
 
@@ -480,12 +577,14 @@ switch(mode){
       //displayedValue = dec_to_bin(8888);
       
       esp_deep_sleep_start();
+      }
+      }
 
       // while(1){
       //   delay(1000);
       // }
       //esp_restart();
-    }
+      //}
 
     #endif
 
@@ -513,11 +612,11 @@ switch(mode){
 
   bounceZero.update();
   bounceConfig.update();
-  bounceMode.update();
+ // bounceMode.update();
 
-    if ( bounceMode.changed()) {
-      changeMode = true;  
-    }
+ //   if ( bounceMode.changed()) {
+ //     changeMode = true;  
+ //   }
   
   if ( bounceZero.changed() && mode == Mode::Taken) {
         esp_task_wdt_reset();
