@@ -23,8 +23,8 @@ void IRAM_ATTR saveLastValue();
 void IRAM_ATTR saveShutdown();
 void IRAM_ATTR powerUpTest();
 void IRAM_ATTR shutDown();
+void IRAM_ATTR shutDown2();
 void setupPwm(int chArg, int freqArg, int resArg);
-
 void setupPwm(int chArg, int freqArg, int resArg){
 
   ledcSetup(pwmChannel, frequency, resolution);
@@ -564,7 +564,7 @@ int32_t readLastPaperValue(){
             case ESP_OK:
             {
                 printf("Done\n");
-                printf("Last paer value = %d\n", lastPaperValue);
+                printf("Last paper value = %d\n", lastPaperValue);
                 break;
                 }
             case ESP_ERR_NVS_NOT_FOUND:
@@ -713,6 +713,35 @@ void IRAM_ATTR shutDown(){
 
   portENTER_CRITICAL_ISR(&timerMux);
   shutDownFlag = true;
+  portEXIT_CRITICAL_ISR(&timerMux);
+
+}
+void IRAM_ATTR shutDown2(){
+
+  portENTER_CRITICAL_ISR(&timerMux);
+  digitalWrite(builtinLed, HIGH); 
+
+    // Save data to EEPROM or NVS
+    saveLastValue2();
+
+    // Disable all interrupts
+    detachInterrupt(thousandsPin);
+    detachInterrupt(onesPin);
+    detachInterrupt(tensPin);
+    detachInterrupt(hundredsPin);
+    detachInterrupt(savePin);
+
+    // Ensure all GPIO outputs are low
+    digitalWrite(a1, LOW);
+    digitalWrite(a2, LOW);
+    digitalWrite(a3, LOW);
+    digitalWrite(a4, LOW);
+    digitalWrite(dp, LOW);
+    digitalWrite(johnson, LOW);
+    digitalWrite(builtinLed, LOW);
+
+    // Enter deep sleep
+    esp_deep_sleep_start();
   portEXIT_CRITICAL_ISR(&timerMux);
 
 }

@@ -566,7 +566,7 @@ int32_t readLastPaperValue(){
             case ESP_OK:
             {
                 printf("Done\n");
-                printf("Last paer value = %d\n", lastPaperValue);
+                printf("Last paper value = %d\n", lastPaperValue);
                 break;
                 }
             case ESP_ERR_NVS_NOT_FOUND:
