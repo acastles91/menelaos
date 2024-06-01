@@ -11,8 +11,8 @@
 #include "nvs_flash.h"
 #include "nvs.h"
 #include "driver/gpio.h"
-#include "avdweb_Switch/avdweb_Switch.h"
-#include "Bounce2.h"
+#include <avdweb_Switch.h>
+#include <Bounce2.h>
 #include "pinout.h"
 #include "functions.h"
 #include "variables.h"
@@ -168,7 +168,7 @@ void setup() {
   #ifdef SETUP_ENCODER
   // //Rotary setup
   
-  ESP32Encoder::useInternalWeakPullResistors = UP; // Enable the weak pull down resistors
+  //ESP32Encoder::useInternalWeakPullResistors = UP; // Enable the weak pull down resistors
   rotary.attachSingleEdge(chA, chB);
   //rotary.attachSingleEdge(chA,chB);  // Attach pins for use as encoder pins
   rotary.setCount(0); //??

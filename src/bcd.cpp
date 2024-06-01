@@ -1,4 +1,4 @@
-#pragma once
+//#pragma once
 
 #include "bcd.h"
 #define EEPROM_SIZE 1

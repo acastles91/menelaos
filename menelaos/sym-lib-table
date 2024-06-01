@@ -1,5 +1,7 @@
 (sym_lib_table
-  (lib (name ariadne-rescue)(type Legacy)(uri /home/antonio/dev/ariadne/ariadne-rescue.lib)(options "")(descr ""))
-  (lib (name upuaut_2Nils-rescue)(type Legacy)(uri /home/antonio/OpenSourceCelluloid/pcb/upuaut/upuaut/upuaut_2Nils-rescue.lib)(options "")(descr ""))
-  (lib (name upuaut-rescue)(type Legacy)(uri /home/antonio/OpenSourceCelluloid/pcb/upuaut/upuaut/upuaut-rescue.lib)(options "")(descr ""))
+  (version 7)
+  (lib (name "ariadne-rescue")(type "Legacy")(uri "/home/antonio/dev/ariadne/ariadne-rescue.lib")(options "")(descr ""))
+  (lib (name "upuaut_2Nils-rescue")(type "Legacy")(uri "/home/antonio/OpenSourceCelluloid/pcb/upuaut/upuaut/upuaut_2Nils-rescue.lib")(options "")(descr ""))
+  (lib (name "upuaut-rescue")(type "Legacy")(uri "/home/antonio/OpenSourceCelluloid/pcb/upuaut/upuaut/upuaut-rescue.lib")(options "")(descr ""))
+  (lib (name "menelaos-v2-rescue")(type "KiCad")(uri "${KIPRJMOD}/menelaos-v2-rescue.kicad_sym")(options "")(descr ""))
 )

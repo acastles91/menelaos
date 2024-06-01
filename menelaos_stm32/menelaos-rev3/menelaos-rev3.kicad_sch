@@ -1,0 +1,120 @@
+(kicad_sch (version 20230121) (generator eeschema)
+
+  (uuid 6aa5db3b-e690-413b-828c-4b387f710c1a)
+
+  (paper "A4")
+
+  (lib_symbols
+  )
+
+
+  (text "MCU" (at 115.824 54.483 0)
+    (effects (font (size 6.35 6.35) (thickness 1.27) bold italic) (justify left bottom))
+    (uuid 138b4e59-dbd2-4057-b8a2-1890c0170f1a)
+  )
+  (text "Switches\n" (at 181.737 125.349 0)
+    (effects (font (size 6.35 6.35) (thickness 1.27) bold italic) (justify left bottom))
+    (uuid 2d18dc93-4ac8-45b4-8b27-f6729a1f9d12)
+  )
+  (text "7 Segment Display" (at 182.372 56.388 0)
+    (effects (font (size 6.35 6.35) (thickness 1.27) bold italic) (justify left bottom))
+    (uuid 455aa49b-401d-49e2-a288-af5db607a562)
+  )
+  (text "Power" (at 37.846 55.499 0)
+    (effects (font (size 6.35 6.35) (thickness 1.27) bold italic) (justify left bottom))
+    (uuid 86f34627-d31f-4b90-a61f-27b446603e58)
+  )
+  (text "DIN Cable" (at 87.376 125.349 0)
+    (effects (font (size 6.35 6.35) (thickness 1.27) bold italic) (justify left bottom))
+    (uuid e31db2d2-c46a-4784-ae0b-59eb93242b46)
+  )
+
+  (sheet (at 182.245 129.286) (size 40.005 24.13) (fields_autoplaced)
+    (stroke (width 0.1524) (type solid))
+    (fill (color 0 0 0 0.0000))
+    (uuid 473ef493-3353-462f-909f-74c3da13b88a)
+    (property "Sheetname" "switches2" (at 182.245 128.5744 0)
+      (effects (font (size 1.27 1.27)) (justify left bottom))
+    )
+    (property "Sheetfile" "switches2.kicad_sch" (at 182.245 154.0006 0)
+      (effects (font (size 1.27 1.27)) (justify left top))
+    )
+    (instances
+      (project "menelaos-rev3"
+        (path "/6aa5db3b-e690-413b-828c-4b387f710c1a" (page "10"))
+      )
+    )
+  )
+
+  (sheet (at 87.63 129.286) (size 41.529 24.003) (fields_autoplaced)
+    (stroke (width 0.1524) (type solid))
+    (fill (color 0 0 0 0.0000))
+    (uuid 4942e399-c826-4ec7-a58c-e181ddae555d)
+    (property "Sheetname" "cable" (at 87.63 128.5744 0)
+      (effects (font (size 1.27 1.27)) (justify left bottom))
+    )
+    (property "Sheetfile" "cable.kicad_sch" (at 87.63 153.8736 0)
+      (effects (font (size 1.27 1.27)) (justify left top))
+    )
+    (instances
+      (project "menelaos-rev3"
+        (path "/6aa5db3b-e690-413b-828c-4b387f710c1a" (page "9"))
+      )
+    )
+  )
+
+  (sheet (at 37.973 59.69) (size 35.941 24.257) (fields_autoplaced)
+    (stroke (width 0.1524) (type solid))
+    (fill (color 0 0 0 0.0000))
+    (uuid 7d0eaab5-afa8-4796-9178-e382a38e4969)
+    (property "Sheetname" "power" (at 37.973 58.9784 0)
+      (effects (font (size 1.27 1.27)) (justify left bottom))
+    )
+    (property "Sheetfile" "power.kicad_sch" (at 37.973 84.5316 0)
+      (effects (font (size 1.27 1.27)) (justify left top))
+    )
+    (instances
+      (project "menelaos-rev3"
+        (path "/6aa5db3b-e690-413b-828c-4b387f710c1a" (page "2"))
+      )
+    )
+  )
+
+  (sheet (at 182.245 59.436) (size 41.402 23.749) (fields_autoplaced)
+    (stroke (width 0.1524) (type solid))
+    (fill (color 0 0 0 0.0000))
+    (uuid 850f8250-cba8-4106-8749-50a64a040a5f)
+    (property "Sheetname" "seven-segment-display" (at 182.245 58.7244 0)
+      (effects (font (size 1.27 1.27)) (justify left bottom))
+    )
+    (property "Sheetfile" "seven-segment-display.kicad_sch" (at 182.245 83.7696 0)
+      (effects (font (size 1.27 1.27)) (justify left top))
+    )
+    (instances
+      (project "menelaos-rev3"
+        (path "/6aa5db3b-e690-413b-828c-4b387f710c1a" (page "8"))
+      )
+    )
+  )
+
+  (sheet (at 116.713 59.309) (size 36.195 23.495) (fields_autoplaced)
+    (stroke (width 0.1524) (type solid))
+    (fill (color 0 0 0 0.0000))
+    (uuid a1b243ee-fe23-4cf4-94a9-5de4773284ea)
+    (property "Sheetname" "mcu" (at 116.713 58.5974 0)
+      (effects (font (size 1.27 1.27)) (justify left bottom))
+    )
+    (property "Sheetfile" "mcu.kicad_sch" (at 116.713 83.3886 0)
+      (effects (font (size 1.27 1.27)) (justify left top))
+    )
+    (instances
+      (project "menelaos-rev3"
+        (path "/6aa5db3b-e690-413b-828c-4b387f710c1a" (page "3"))
+      )
+    )
+  )
+
+  (sheet_instances
+    (path "/" (page "1"))
+  )
+)

@@ -1,5 +1,3 @@
-#pragma once
-
 #include "variables.h"
 
 //Functions
